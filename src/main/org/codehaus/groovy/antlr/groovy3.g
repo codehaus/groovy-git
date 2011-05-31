@@ -426,7 +426,6 @@ CLOSABLE_BLOCK_OP
     @after { paraphrase.pop(); }
          :   '->'            ;
 
-
 // Whitespace -- ignored
 WS
     @init { paraphrase.push("whitespace"); }
@@ -501,7 +500,7 @@ SL_COMMENT
         //This might be significant, so don't swallow it inside the comment:
         //ONE_NL
     ;
-
+    
 // Script-header comments
 SH_COMMENT
     @init { paraphrase.push("a single line comment"); }
@@ -515,60 +514,54 @@ SH_COMMENT
             ~('\n'|'\r'|'\uffff')
         )*
         { $channel=HIDDEN;}
-        //This might be significant, so don't swallow it inside the comment:
-        //ONE_NL
-    ;
+       
+           ;    
           
-ML_COMMENT
+ML_COMMENT //This might be significant, so don't swallow it inside the comment:
+        //ONE_NL
     :   '/*' (options {greedy=false;} : .)* '*/' {$channel=HIDDEN;}
-    ;
-
-STRING_CTOR_END[boolean fromStart, boolean tripleQuote]
-returns [int tt=STRING_CTOR_END]
-	@init { 
-		boolean dollarOK = false;
-		paraphrase.push("a string literal end");		
-	}
-    @after { paraphrase.pop(); }
-        
-    :
-        (
-            options {  greedy = true;  }:
-            STRING_CH | ESC | '\'' | STRING_NL[tripleQuote]
-        |   ('"' (~'"' | '"' ~'"'))=> {tripleQuote}? '"'  // allow 1 or 2 close quotes
-        )*
-        (   (   { !tripleQuote }? '\"'!
-            |   {  tripleQuote }? '\"\"\"'!
-            )
-            {
-                if (fromStart)      tt = STRING_LITERAL;  // plain string literal!
-                if (!tripleQuote)   {--suppressNewline;}
-                // done with string constructor!
-                //assert(stringCtorState == 0);
-            }
-        |   {dollarOK = atValidDollarEscape();}
-            '$'!
-            {
-                require(dollarOK,
-                    "illegal string body character after dollar sign",
-                    "either escape a literal dollar sign \"\\$5\" or bracket the value expression \"${5}\"");
-                // Yes, it's a string constructor, and we've got a value part.
-                tt = (fromStart ? STRING_CTOR_START : STRING_CTOR_MIDDLE);
-                stringCtorState = SCS_VAL + (tripleQuote? SCS_TQ_TYPE: SCS_SQ_TYPE);
-            }
-        )
-        {   $type = tt;  }
     ;
 
 fragment    
 STRING_CH
-	@init { paraphrase.push("a string character"); }
-    @after { paraphrase.pop(); }
+@init { paraphrase.push("a string character"); }
+@after { paraphrase.pop(); }
     :   ~('"'|'\''|'\\'|'$'|'\n'|'\r'|'\uffff')
     ;
-    
-    
-    
+
+fragment ESCAPED_SLASH  : '$' '/' { setText('/'); };
+
+fragment ESCAPED_DOLLAR : '$' '$' { setText('$'); };
+
+fragment
+REGEXP_SYMBOL
+@init { paraphrase.push("a multiline regular expression character"); }
+@after { paraphrase.pop(); }
+    :
+        (
+            ~('*'|'/'|'$'|'\\'|'\n'|'\r'|'\uffff')
+        |   { LA(2)!='/' && LA(2)!='\n' && LA(2)!='\r' }? '\\' // backslash only escapes '/' and EOL
+        |   '\\' '/'                   { setText('/'); }
+        |   STRING_NL[true]
+        |  '\\' ONE_NL[false]
+        )
+        ('*')*      // stars handled specially to avoid ambig. on /**/
+    ;
+
+fragment
+DOLLAR_REGEXP_SYMBOL
+@init { paraphrase.push("a multiline dollar escaping regular expression character"); }
+@after { paraphrase.pop(); }
+    :
+        (
+            ~('$' | '\\' | '/' | '\n' | '\r' | '\uffff')
+        |   { LA(2)!='\n' && LA(2)!='\r' }? '\\'               // backslash only escapes EOL
+        |   ('/' ~'$') => '/'                                  // allow a slash if not followed by a $
+        |   STRING_NL[true]
+        |  '\\' ONE_NL[false]
+        )
+    ;
+
 // escape sequence -- note that this is protected; it can only be called
 // from another lexer rule -- it will not ever directly return a token to
 // the parser
@@ -579,21 +572,19 @@ STRING_CH
 // the FOLLOW ambig warnings.
 fragment
 ESC
-	@init { paraphrase.push("an escape sequence"); }
-	@after { paraphrase.pop(); }
-    :   '\\'!
-        (   'n'     {$setText("\n");}
-        |   'r'     {$setText("\r");}
-        |   't'     {$setText("\t");}
-        |   'b'     {$setText("\b");}
-        |   'f'     {$setText("\f");}
-        |   '"'
-        |   '\''
-        |   '\\'
-        |   '$'     //escape Groovy $ operator uniformly also
-        |   ('u')+ {$setText("");}
-            HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
-            {char ch = (char)Integer.parseInt($getText,16); $setText(ch);}
+    :   '\\'
+        (       'n'    {setText("\n");}
+        |       'r'    {setText("\r");}
+        |       't'    {setText("\t");}
+        |       'b'    {setText("\b");}
+        |       'f'    {setText("\f");}
+        |       '"'    {setText("\"");}
+        |       '\''   {setText("\'");}
+        |       '/'    {setText("/");}
+        |       '\\'   {setText("\\");}
+        |       ('u')+ {setText("");}
+        
+         i=HEX_DIGIT j=HEX_DIGIT k=HEX_DIGIT l=HEX_DIGIT   {setText(ParserUtil.hexToChar(i.getText(),j.getText(),k.getText(),l.getText()));}
         |   '0'..'3'
             (
             	//TODO: verify
@@ -609,8 +600,8 @@ ESC
                 :   '0'..'7'
                 )?
             )?
-            {char ch = (char)Integer.parseInt($getText,8); $setText(ch);}
-        |   '4'..'7'
+            {char ch = (char)Integer.parseInt(getText,8); setText(ch);}
+       |   '4'..'7'
             (
             	//TODO: verify
                 //options {
@@ -618,21 +609,18 @@ ESC
                 //}
             :   '0'..'7'
             )?
-            {char ch = (char)Integer.parseInt($getText,8); $setText(ch);}
+            {char ch = (char)Integer.parseInt(getText,8); setText(ch);}
         )
-    |//TODO:
-    //!
-      '\\' ONE_NL[false]
-    ;
-
+       |  '\\' ONE_NL[false]
+      ;
+      
 fragment
 STRING_NL[boolean allowNewline]
 @init {paraphrase.push("a newline inside a string");}
 @after { paraphrase.pop(); }
     :  {if (!allowNewline) throw new MismatchedCharException('\n', '\n', true, this); }
-       ONE_NL[false] { $setText('\n'); }
+       ONE_NL[false] { setText("\n"); }
     ;
-
 
 // hexadecimal digit (again, note it's protected!)
 fragment
@@ -641,3 +629,143 @@ HEX_DIGIT
 @after { paraphrase.pop(); }
     :   ('0'..'9'|'A'..'F'|'a'..'f')
     ;
+    
+// a dummy rule to force vocabulary to be all characters (except special
+// ones that ANTLR uses internally (0 to 2)
+fragment
+VOCAB
+@init {paraphrase.push("a character");}
+@after { paraphrase.pop(); }
+    :   '\u007f'..'\u00FF'
+    ;    
+    
+fragment
+LETTER
+@init {paraphrase.push("a letter");}
+@after { paraphrase.pop(); }
+    :   'a'..'z'|'A'..'Z'|'\u00C0'..'\u00D6'|'\u00D8'..'\u00F6'|'\u00F8'..'\u00FF'|'\u0100'..'\uFFFE'|'_'
+    // TODO:  Recognize all the Java identifier starts here (except '$').
+    ;
+
+fragment
+DIGIT
+@init {paraphrase.push("a digit");}
+@after { paraphrase.pop(); }
+    :   '0'..'9'
+    // TODO:  Recognize all the Java identifier parts here (except '$').
+    ;
+    
+fragment
+DIGITS_WITH_UNDERSCORE
+@init {paraphrase.push("a sequence of digits and underscores, bordered by digits");}
+@after { paraphrase.pop(); }
+    :   DIGIT (DIGITS_WITH_UNDERSCORE_OPT)?
+    ;
+
+fragment
+DIGITS_WITH_UNDERSCORE_OPT
+@init {paraphrase.push("a sequence of digits and underscores with maybe underscore starting");}
+@after { paraphrase.pop(); }
+    :   (DIGIT | '_')* DIGIT
+    ;
+
+
+
+
+// a numeric literal    
+NUM_INT
+@init {paraphrase.push("a numeric literal");}
+@after { paraphrase.pop(); }
+    : DIGIT
+    | HEX_DIGIT
+    ;
+    
+IDENT
+@init {paraphrase.push("an identifier"); }
+@after { paraphrase.pop(); }
+        :   {stringCtorState == 0}? (DOLLAR|LETTER) (LETTER|DIGIT|DOLLAR)*
+         {
+            if (stringCtorState != 0) {
+                if (LA(1) == '.' && LA(2) != '$' &&
+                        Character.isJavaIdentifierStart(LA(2))) {
+                    // pick up another name component before going literal again:
+                    restartStringCtor(false);
+                } else {
+                    // go back to the string
+                    restartStringCtor(true);
+                }
+            }
+            int ttype = testLiteralsTable(IDENT);
+            // Java doesn't have the keywords 'as', 'in' or 'def so we make some allowances
+            // for them in package names for better integration with existing Java packages
+            if ((ttype == LITERAL_as || ttype == LITERAL_def || ttype == LITERAL_in) &&
+                (LA(1) == '.' || lastSigTokenType == DOT || lastSigTokenType == LITERAL_package)) {
+                ttype = IDENT;
+            }
+            if (ttype == LITERAL_static && LA(1) == '.') {
+                ttype = IDENT;
+            }
+
+        /* The grammar allows a few keywords to follow dot.
+         * TODO: Reinstate this logic if we change or remove keywordPropertyNames.
+            if (ttype != IDENT && lastSigTokenType == DOT) {
+                // A few keywords can follow a dot:
+                switch (ttype) {
+                case LITERAL_this: case LITERAL_super: case LITERAL_class:
+                    break;
+                default:
+                    ttype = LITERAL_in;  // the poster child for bad dotted names
+                }
+            }
+        */
+            setType(ttype);
+
+            // check if "assert" keyword is enabled
+            if (assertEnabled && "assert".equals(getText)) {
+                setType(LITERAL_assert); // set token type for the rule in the parser
+            }
+            // check if "enum" keyword is enabled
+            if (enumEnabled && "enum".equals(getText)) {
+                setType(LITERAL_enum); // set token type for the rule in the parser
+            }
+        }
+        ;
+
+// JDK 1.5 token for annotations and their declarations
+// also a groovy operator for actual field access e.g. 'telson.@age'
+AT
+@init {paraphrase.push("'@'");}
+@after { paraphrase.pop(); }
+    :   '@'
+    ;
+    
+// a couple protected methods to assist in matching floating point numbers
+fragment
+EXPONENT
+@init {paraphrase.push("an exponent");}
+@after { paraphrase.pop(); }
+    :   ('e'|'E') ('+'|'-')? ('0'..'9'|'_')* ('0'..'9')
+    ;
+
+
+fragment
+FLOAT_SUFFIX
+@init {paraphrase.push("a float or double suffix");}
+@after { paraphrase.pop(); }
+    :   'f'|'F'|'d'|'D'
+    ;
+
+fragment
+BIG_SUFFIX
+@init {paraphrase.push("a big decimal suffix");}
+@after { paraphrase.pop(); }
+    :   'g'|'G'
+    ;
+    
+// Note: Please don't use physical tabs.  Logical tabs for indent are width 4.
+// Here's a little hint for you, Emacs:
+// Local Variables:
+// tab-width: 4
+// mode: antlr-mode
+// indent-tabs-mode: nil
+// End:
