@@ -528,6 +528,66 @@ STRING_CH
 @after { paraphrase.pop(); }
     :   ~('"'|'\''|'\\'|'$'|'\n'|'\r'|'\uffff')
     ;
+    
+// string literals
+STRING_LITERAL
+@init { paraphrase.push("a string literal"); int tt=0; }
+@after { paraphrase.pop(); }        
+    :   ('\'\'\'') =>  //...shut off ambiguity warning
+        '\'\'\'' {$channel=HIDDEN;}
+        (   STRING_CH | ESC | '"' | '$' | STRING_NL[true]
+        |   ('\'' (~'\'' | '\'' ~'\'')) => '\''  // allow 1 or 2 close quotes
+        )*
+        '\'\'\'' {$channel=HIDDEN;}
+    |   '\''{$channel=HIDDEN;}
+                                {++suppressNewline;}
+        (   STRING_CH | ESC | '"' | '$'  )*
+                                {--suppressNewline;}
+        '\'' {$channel=HIDDEN;}
+    |   ('"""') =>  //...shut off ambiguity warning
+        '\"""' {$channel=HIDDEN;}
+        tt=STRING_CTOR_END[true, /*tripleQuote:*/ true]
+        { $type = tt; }
+    |   '"' {$channel=HIDDEN;}
+                                {++suppressNewline;}
+        tt=STRING_CTOR_END[true, /*tripleQuote:*/ false]
+        { $type = tt; }
+    ;
+
+
+fragment
+STRING_CTOR_END[boolean fromStart, boolean tripleQuote]
+@init { paraphrase.push("a string literal end"); boolean dollarOK = false; }
+@after { paraphrase.pop(); }
+//returns [int tt=STRING_CTOR_END]
+    :
+        (
+            options {  greedy = true;  }:
+            STRING_CH | ESC | '\'' | STRING_NL[tripleQuote]
+        |   ('"' (~'"' | '"' ~'"'))=> {tripleQuote}? '"'  // allow 1 or 2 close quotes
+        )*
+        (   (   { !tripleQuote }? '"' {$channel=HIDDEN;}
+            |   {  tripleQuote }? '"""' {$channel=HIDDEN;}
+            )
+            {
+                if (fromStart)      tt = STRING_LITERAL;  // plain string literal!
+                if (!tripleQuote)   {--suppressNewline;}
+                // done with string constructor!
+                //assert(stringCtorState == 0);
+            }
+        |   {dollarOK = atValidDollarEscape();}
+            '$' {$channel=HIDDEN;}
+            {
+                require(dollarOK,
+                    "illegal string body character after dollar sign",
+                    "either escape a literal dollar sign \"\\$5\" or bracket the value expression \"${5}\"");
+                // Yes, it's a string constructor, and we've got a value part.
+                tt = (fromStart ? STRING_CTOR_START : STRING_CTOR_MIDDLE);
+                stringCtorState = SCS_VAL + (tripleQuote? SCS_TQ_TYPE: SCS_SQ_TYPE);
+            }
+        )
+        { $type = tt; }
+    ;
 
 fragment ESCAPED_SLASH  : '$' '/' { setText('/'); };
 
@@ -614,6 +674,116 @@ ESC
        |  '\\' ONE_NL[false]
       ;
       
+
+REGEXP_LITERAL
+@init {paraphrase.push("a multiline regular expression literal"); int tt=0;}
+@after { paraphrase.pop(); }
+    :   {allowRegexpLiteral()}?
+        '/' {$channel=HIDDEN;}
+        {++suppressNewline;}
+        //Do this, but require it to be non-trivial:  REGEXP_CTOR_END[true]
+        // There must be at least one symbol or $ escape, lest the regexp collapse to '//'.
+        // (This should be simpler, but I don't know how to do it w/o ANTLR warnings vs. '//' comments.)
+        (
+            REGEXP_SYMBOL
+            tt=REGEXP_CTOR_END[true]
+        |   {!atValidDollarEscape()}? '$'
+            tt=REGEXP_CTOR_END[true]
+        |   '$' {$channel=HIDDEN;}
+            {
+                // Yes, it's a regexp constructor, and we've got a value part.
+                tt = STRING_CTOR_START;
+                stringCtorState = SCS_VAL + SCS_RE_TYPE;
+            }
+        )
+        { $type = tt; }
+
+    |   DIV                 { $type = DIV; }
+    |   DIV_ASSIGN          { $type = DIV_ASSIGN; }
+    ;
+    
+
+DOLLAR_REGEXP_LITERAL
+@init {paraphrase.push("a multiline dollar escaping regular expression literal"); int tt=0;}
+@after { paraphrase.pop(); }
+    :   {allowRegexpLiteral()}? '$/' {$channel=HIDDEN;}
+        // Do this, but require it to be non-trivial:  DOLLAR_REGEXP_CTOR_END[true]
+        // There must be at least one symbol or $ escape, otherwise the regexp collapses.
+        (
+            DOLLAR_REGEXP_SYMBOL
+            tt=DOLLAR_REGEXP_CTOR_END[true]
+        | {!atValidDollarEscape()}? '$'
+            tt=DOLLAR_REGEXP_CTOR_END[true]
+        | '$' {$channel=HIDDEN;}
+            {
+                // Yes, it's a regexp constructor, and we've got a value part.
+                tt = STRING_CTOR_START;
+                stringCtorState = SCS_VAL + SCS_DRE_TYPE;
+            }
+        )
+        { $type = tt; }
+    ;
+    
+fragment
+REGEXP_CTOR_END[boolean fromStart]
+@init {paraphrase.push("a multiline regular expression literal end"); }
+@after { paraphrase.pop(); }
+//returns [int tt=STRING_CTOR_END]
+    :
+        (
+            options {  greedy = true;  }:
+            REGEXP_SYMBOL
+        |
+            {!atValidDollarEscape()}? '$'
+        )*
+        (   '/' {$channel=HIDDEN;}
+            {
+                if (fromStart)      tt = STRING_LITERAL;  // plain regexp literal!
+                {--suppressNewline;}
+                // done with regexp constructor!
+                //assert(stringCtorState == 0);
+            }
+        |   '$' {$channel=HIDDEN;}
+            {
+                // Yes, it's a regexp constructor, and we've got a value part.
+                tt = (fromStart ? STRING_CTOR_START : STRING_CTOR_MIDDLE);
+                stringCtorState = SCS_VAL + SCS_RE_TYPE;
+            }
+        )
+        {   $type = tt;  }
+    ;
+    
+fragment
+DOLLAR_REGEXP_CTOR_END[boolean fromStart]
+@init {paraphrase.push("a multiline dollar escaping regular expression literal end"); }
+@after { paraphrase.pop(); }
+//returns [int tt=STRING_CTOR_END]
+    :
+        (
+            options {  greedy = true;  }:
+            { !(LA(1) == '/' && LA(2) == '$') }? DOLLAR_REGEXP_SYMBOL
+        |
+            ('$' '/') => ESCAPED_SLASH
+        |
+            ('$' '$') => ESCAPED_DOLLAR
+        |
+            {!atValidDollarEscape() && !atDollarSlashEscape() && !atDollarDollarEscape()}? '$'
+        )*
+        (
+            '/$' {$channel=HIDDEN;}
+            {
+                if (fromStart)      tt = STRING_LITERAL;  // plain regexp literal!
+            }
+        |   '$' {$channel=HIDDEN;}
+            {
+                // Yes, it's a regexp constructor, and we've got a value part.
+                tt = (fromStart ? STRING_CTOR_START : STRING_CTOR_MIDDLE);
+                stringCtorState = SCS_VAL + SCS_DRE_TYPE;
+            }
+        )
+        {   $type = tt;  }
+    ;        
+            
 fragment
 STRING_NL[boolean allowNewline]
 @init {paraphrase.push("a newline inside a string");}
@@ -669,9 +839,6 @@ DIGITS_WITH_UNDERSCORE_OPT
     :   (DIGIT | '_')* DIGIT
     ;
 
-
-
-
 // a numeric literal    
 NUM_INT
 @init {paraphrase.push("a numeric literal");}
@@ -718,15 +885,15 @@ IDENT
                 }
             }
         */
-            setType(ttype);
+            $type = tt;
 
             // check if "assert" keyword is enabled
             if (assertEnabled && "assert".equals(getText)) {
-                setType(LITERAL_assert); // set token type for the rule in the parser
+                $type = LITERAL_assert; // set token type for the rule in the parser
             }
             // check if "enum" keyword is enabled
             if (enumEnabled && "enum".equals(getText)) {
-                setType(LITERAL_enum); // set token type for the rule in the parser
+                $type = LITERAL_enum; // set token type for the rule in the parser
             }
         }
         ;
