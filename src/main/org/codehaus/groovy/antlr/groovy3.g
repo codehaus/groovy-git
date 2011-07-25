@@ -36,7 +36,6 @@ tokens {
    package org.codehaus.groovy.antlr.parser;
    
 	import org.codehaus.groovy.antlr.*;
-	import java.util.*;
 	import java.io.InputStream;
 	import java.io.Reader;
 	import antlr.InputBuffer;
@@ -51,7 +50,6 @@ tokens {
 	package org.codehaus.groovy.antlr.parser;
    
 	import org.codehaus.groovy.antlr.*;
-	import java.util.*;
 	import java.io.InputStream;
 	import java.io.Reader;
 	import antlr.InputBuffer;
@@ -184,8 +182,8 @@ modifier
     |   'synchronized'
     |   'volatile'
     |   'strictfp'
-    ;    
-
+    ;   
+    
 // The primitive types.
 builtInType
     :   'void'
@@ -198,14 +196,13 @@ builtInType
     |   'long'
     |   'double'
     ;
-    
 
 /*
  * Allowed keywords after dot (as a member name) and before colon (as a label).
  * Includes all Java keywords plus "in" and "as".
  */
 keywordPropertyNames
-    :   (
+    :	(
           'as'
         | 'assert'
         | 'break'
@@ -245,21 +242,21 @@ keywordPropertyNames
         | modifier
         | builtInType
         )
-        { #keywordPropertyNames.setType(IDENT); }
+        -> ^(IDENT[keywordPropertyNames])
     ;
-
+        
 /** Used in cases where a declaration cannot have commas, or ends with the "in" operator instead of '='. */
 singleVariable[AST mods, AST t]  
 	@init {Token first = LT(1);}
     :
         id=variableName
-        {#singleVariable = #(create(VARIABLE_DEF,"VARIABLE_DEF",first,LT(1)), mods, #(create(TYPE,"TYPE",first,LT(1)),t), id);}
+//TODO        {#singleVariable = #(create(VARIABLE_DEF,"VARIABLE_DEF",first,LT(1)), mods, #(create(TYPE,"TYPE",first,LT(1)),t), id);}
     ;
 
 variableName
     :   IDENT
     ;
-    
+
 /** Declaration of a variable. This can be a class/instance variable,
  *  or a local variable in a method
  *  It can also include possible initialization.
@@ -269,8 +266,15 @@ variableDeclarator[AST mods, AST t,Token first]
         id=variableName
         /*OBS*d:declaratorBrackets[t]*/
         (v=varInitializer)?
-        {#variableDeclarator = #(create(VARIABLE_DEF,"VARIABLE_DEF",first,LT(1)), mods, #(create(TYPE,"TYPE",first,LT(1)),t), id, v);}
-    ;    
+//TODO:        {#variableDeclarator = #(create(VARIABLE_DEF,"VARIABLE_DEF",first,LT(1)), mods, #(create(TYPE,"TYPE",first,LT(1)),t), id, v);}
+    ;
+    
+
+/** An assignment operator '=' followed by an expression.  (Never empty.) */
+varInitializer
+    :   ASSIGN^ nls! //TODO: expressionStatementNoCheck
+        // In {T x = y}, the left-context of y is that of an initializer.
+    ;        
 
 listOfVariables[AST mods, AST t, Token first]
     :
@@ -283,31 +287,31 @@ listOfVariables[AST mods, AST t, Token first]
         )*
     ;
     
-// A (possibly-qualified) java identifier. We start with the first IDENT
-// and expand its name by adding dots and following IDENTS
-identifier 
-	@init {Token first = LT(1);}
-    :   i1=IDENT!
-        (   options { greedy = true; } :
-            d=DOT! nls! i2=IDENT!
-            {$i1 = #(create(DOT,".",first,LT(1)),$i1,$i2);}
-        )*
-        {$identifier = $i1;}
-    ;
+// A (possibly-qualified) java identifier.  We start with the first IDENT
+//   and expand its name by adding dots and following IDENTS
+identifier
+		@init {Token first = LT(1);}
+        :   i1=IDENT!  
+        	( 	options { greedy = true; } :
+        		d=DOT! nls! i2=IDENT! 
+//TODO:        		{$i1 = #(create(DOT,".",first,LT(1)),$i1,$i2);}
+        	)*
+        	//TODO {$identifier = $i1;}
+        ;
 
 identifierStar 
 	@init {Token first = LT(1);}
     :   i1=IDENT!
         (   options { greedy = true; } :
             d1=DOT! nls! i2=IDENT!
-            {$i1 = #(create(DOT,".",first,LT(1)),$i1,$i2);}
+//TODO            {$i1 = #(create(DOT,".",first,LT(1)),$i1,$i2);}
         )*
-        (   d2=DOT!  nls! s=STAR!
-            {$i1 = #(create(DOT,".",first,LT(1)),$i1,$s);}
+        (   d2=DOT! nls! s=STAR!
+//TODO            {$i1 = #(create(DOT,".",first,LT(1)),$i1,$s);}
         |   'as'! nls! alias=IDENT!
-            {$i1 = #(create(LITERAL_as,"as",first,LT(1)),$i1,$alias);}
+//TODO            {$i1 = #(create(LITERAL_as,"as",first,LT(1)),$i1,$alias);}
         )?
-        {$identifierStar = $i1;}
+        //TODO {$identifierStar = $i1;}
     ;
 
 modifiersInternal
@@ -338,9 +342,9 @@ modifiersInternal
 modifiers  
 	@init {Token first = LT(1);}
     :   modifiersInternal
-        {#modifiers = #(create(MODIFIERS, "MODIFIERS",first,LT(1)), #modifiers);}
+//TODO:        {#modifiers = #(create(MODIFIERS, "MODIFIERS",first,LT(1)), #modifiers);}
     ;
-
+    
 /** A list of zero or more modifiers, annotations, or "def". */
 modifiersOpt  
 	@init {Token first = LT(1);}
@@ -349,13 +353,13 @@ modifiersOpt
             //options{generateAmbigWarnings=false;}:
             modifiersInternal
         )?
-        {#modifiersOpt = #(create(MODIFIERS, "MODIFIERS",first,LT(1)), #modifiersOpt);}
-    ;        
+//TODO        {#modifiersOpt = #(create(MODIFIERS, "MODIFIERS",first,LT(1)), #modifiersOpt);}
+    ;
     
 annotation/*!*/
 	@init {Token first = LT(1);}
     :   AT! i=identifier nls! (options{greedy=true;}: LPAREN! ( args=annotationArguments )? RPAREN! )?
-        {$annotation = #(create(ANNOTATION,"ANNOTATION",first,LT(1)), $i, $args);}
+        //TODO: {#annotation = #(create(ANNOTATION,"ANNOTATION",first,LT(1)), $i, $args);}
     ;
 
 annotationsInternal
@@ -366,6 +370,7 @@ annotationsInternal
         |
             annotation nls!)*
     ;
+    
 
 annotationsOpt  
 	@init {Token first = LT(1);}
@@ -374,15 +379,16 @@ annotationsOpt
                //options{generateAmbigWarnings=false;}:
                annotationsInternal
         )?
-        {$annotationsOpt = $(create(ANNOTATIONS, "ANNOTATIONS", first, LT(1)), $annotationsOpt);}
+//TODO:        {$annotationsOpt = $(create(ANNOTATIONS, "ANNOTATIONS", first, LT(1)), $annotationsOpt);}
     ;
 
 annotationArguments
     :   v=annotationMemberValueInitializer
             { Token itkn = new Token(IDENT, "value");
               AST i;
-              $i = #(create(IDENT, "value", itkn, itkn));
-              $annotationArguments = #(create(ANNOTATION_MEMBER_VALUE_PAIR,"ANNOTATION_MEMBER_VALUE_PAIR",LT(1),LT(1)), i, $v);}
+//TODO:              $i = #(create(IDENT, "value", itkn, itkn));
+//TODO:              $annotationArguments = #(create(ANNOTATION_MEMBER_VALUE_PAIR,"ANNOTATION_MEMBER_VALUE_PAIR",LT(1),LT(1)), i, $v);
+              }
             | annotationMemberValuePairs
     ;
 
@@ -393,7 +399,7 @@ annotationMemberValuePairs
 annotationMemberValuePair/*!*/
 	@init   {Token first = LT(1);}
     :   i=annotationIdent ASSIGN! nls! v=annotationMemberValueInitializer
-            {$annotationMemberValuePair = #(create(ANNOTATION_MEMBER_VALUE_PAIR,"ANNOTATION_MEMBER_VALUE_PAIR",first,LT(1)), $i, $v);}
+//TODO:            {$annotationMemberValuePair = #(create(ANNOTATION_MEMBER_VALUE_PAIR,"ANNOTATION_MEMBER_VALUE_PAIR",first,LT(1)), $i, $v);}
     ;
 
 annotationIdent
@@ -432,372 +438,180 @@ annotationMemberArrayInitializer
 annotationMemberArrayValueInitializer
     :   conditionalExpression[0]
     |   annotation nls!
-    ;                     
-
-/** An expression may be followed by one or both of (...) and {...}.
- *  Note: If either is (...) or {...} present, it is a method call.
- *  The {...} is appended to the argument list, and matches a formal of type Closure.
- *  If there is no method member, a property (or field) is used instead, and must itself be callable.
- *  <p>
- *  If the methodCallArgs are absent, it is a property reference.
- *  If there is no property, it is treated as a field reference, but never a method reference.
- *  <p>
- *  Arguments in the (...) can be labeled, and the appended block can be labeled also.
- *  If there is a mix of unlabeled and labeled arguments,
- *  all the labeled arguments must follow the unlabeled arguments,
- *  except that the closure (labeled or not) is always a separate final argument.
- *  Labeled arguments are collected up and passed as a single argument to a formal of type Map.
- *  <p>
- *  Therefore, f(x,y, a:p, b:q) {s} is equivalent in all ways to f(x,y, [a:p,b:q], {s}).
- *  Spread arguments of sequence type count as unlabeled arguments,
- *  while spread arguments of map type count as labeled arguments.
- *  (This distinction must sometimes be checked dynamically.)
- *
- *  A plain unlabeled argument is allowed to match a trailing Map or Closure argument:
- *  f(x, a:p) {s}  ===  f(*[ x, [a:p], {s} ])
- */
-// AST is [METHOD_CALL, callee, ELIST? CLOSABLE_BLOCK?].
-// Note that callee is often of the form x.y but not always.
-// If the callee is not of the form x.y, then an implicit .call is needed.
-// Parameter callee is only "null" when called from newExpression
-methodCallArgs[AST callee]
-    :
-        LPAREN!
-        al=argList!
-        RPAREN!
-        { if (callee != null && callee.getFirstChild() != null) {
-              //method call like obj.method()
-              #methodCallArgs = #(create(METHOD_CALL, "(",callee.getFirstChild(),LT(1)), callee, al);
-          } else {
-              //method call like method() or new Expr(), in the latter case "callee" is null
-              #methodCallArgs = #(create(METHOD_CALL, "(",callee, LT(1)), callee, al);
-          }
-        }
-    ;
-
-/** An appended block follows any expression.
- *  If the expression is not a method call, it is given an empty argument list.
- */
-appendedBlock[AST callee]
-    :
-        /*  FIXME DECIDE: should appended blocks accept labels?
-        (   (IDENT COLON nls LCURLY)=>
-            IDENT c:COLON^ {#c.setType(LABELED_ARG);} nls!
-        )? */
-        cb=closableBlock!
-        {
-            // If the callee is itself a call, flatten the AST.
-            if (callee != null && callee.getType() == METHOD_CALL) {
-                #appendedBlock = #(create(METHOD_CALL, "(",callee,LT(1)),
-                                   callee.getFirstChild(), cb);
-            } else {
-                #appendedBlock = #(create(METHOD_CALL, "{",callee,LT(1)), callee, cb);
-            }
-        }
-    ;
-
-// *TODO* We must also audit the various occurrences of warning
-// suppressions like "options { greedy = true; }".
-
-/** A declaration with one declarator and no initialization, like a parameterDeclaration.
- *  Used to parse loops like <code>for (int x in y)</code> (up to the <code>in</code> keyword).
- */
-singleDeclarationNoInit!
-    :
-        // method/variable using a 'def' or a modifier; type is optional
-        m=modifiers
-        (t=typeSpec[false])?
-        v=singleVariable[#m, #t]
-        {#singleDeclarationNoInit = #v;}
-    |
-        // method/variable using a type only
-        t2=typeSpec[false]
-        v2=singleVariable[null,#t2]
-        {#singleDeclarationNoInit = #v2;}
-    ;
-
-/** A declaration with one declarator and optional initialization, like a parameterDeclaration.
- *  Used to parse declarations used for both binding and effect, in places like argument
- *  lists and <code>while</code> statements.
- */
-singleDeclaration
-    :   sd=singleDeclarationNoInit!
-        { #singleDeclaration = #sd; }
-        (varInitializer)?
-    ;
-
-/** Used only as a lookahead predicate, before diving in and parsing a declaration.
- *  A declaration can be unambiguously introduced with "def", an annotation or a modifier token like "final".
- *  It may also be introduced by a simple identifier whose first character is an uppercase letter,
- *  as in {String x}.  A declaration can also be introduced with a built in type like 'int' or 'void'.
- *  Brackets (array and generic) are allowed, as in {List[] x} or {int[][] y}.
- *  Anything else is parsed as a statement of some sort (expression or command).
- *  <p>
- *  (In the absence of explicit method-call parens, we assume a capitalized name is a type name.
- *  Yes, this is a little hacky.  Alternatives are to complicate the declaration or command
- *  syntaxes, or to have the parser query the symbol table.  Parse-time queries are evil.
- *  And we want both {String x} and {println x}.  So we need a syntactic razor-edge to slip
- *  between 'println' and 'String'.)
- *
- *   *TODO* The declarationStart production needs to be strengthened to recognize
- *  things like {List<String> foo}.
- *  Right now it only knows how to skip square brackets after the type, not
- *  angle brackets.
- *  This probably turns out to be tricky because of >> vs. > >. If so,
- *  just put a TODO comment in.
- */
-declarationStart!
-    :   (     ('def' nls)
-            | modifier nls
-            | annotation nls
-            | (   upperCaseIdent
-                |   builtInType
-                |   qualifiedTypeName
-              ) (typeArguments)? (LBRACK balancedTokens RBRACK)*
-        )+
-        ( IDENT | STRING_LITERAL )
-    ;
-
-qualifiedTypeName!
-    :
-        IDENT DOT (IDENT DOT)* upperCaseIdent
-    ;
-
-/** An assignment operator '=' followed by an expression.  (Never empty.) */
-varInitializer
-    :   ASSIGN^ nls! expressionStatementNoCheck
-        // In {T x = y}, the left-context of y is that of an initializer.
-    ;
-
-/** A list of zero or more formal parameters.
- *  If a parameter is variable length (e.g. String... myArg) it should be
- *  to the right of any other parameters of the same kind.
- *  General form:  (req, ..., opt, ..., [rest], key, ..., [restKeys], [block]
- *  This must be sorted out after parsing, since the various declaration forms
- *  are impossible to tell apart without backtracking.
- */
-parameterDeclarationList  
-	@init {Token first = LT(1);}
-    :
-        (
-            parameterDeclaration
-            (   COMMA! nls!
-                parameterDeclaration
-            )*
-        )?
-        {#parameterDeclarationList = #(create(PARAMETERS,"PARAMETERS",first,LT(1)),
-                                       #parameterDeclarationList);}
-    ;
-
-/** A formal parameter for a method or closure. */
-parameterDeclaration/*!*/
-    @init { Token first = LT(1);boolean spreadParam = false; }
-    :
-        pm=parameterModifiersOpt
-        (   options {greedy=true;} :
-            t=typeSpec[false]
-        )?
-
-        // TODO:  What do formal parameters for keyword arguments look like?
-
-        // Java-style var args
-        ( TRIPLE_DOT! { spreadParam = true; } )?
-
-        id=IDENT
-
-        // allow an optional default value expression
-        (exp=varInitializer)?
-
-        /*OBS*pd:declaratorBrackets[#t]*/
-        {
-            if (spreadParam) {
-                #parameterDeclaration = #(create(VARIABLE_PARAMETER_DEF,"VARIABLE_PARAMETER_DEF",first,LT(1)),
-                      pm, #(create(TYPE,"TYPE",first,LT(1)),t), id, exp);
-            } else {
-                #parameterDeclaration = #(create(PARAMETER_DEF,"PARAMETER_DEF",first,LT(1)),
-                      pm, #(create(TYPE,"TYPE",first,LT(1)),t), id, exp);
-            }
-        }
-    ;
-
-parameterModifiersOpt
-    @init    { Token first = LT(1);int seenDef = 0; }
-        //final and/or def can appear amongst annotations in any order
-    :   (   {seenDef++ == 0}?       // do not allow multiple "def" tokens
-            'def'!  nls!            // redundant, but allowed for symmetry
-        |   'final' nls!
-        |   annotation nls!
-        )*
-        {#parameterModifiersOpt = #(create(MODIFIERS,"MODIFIERS",first,LT(1)), #parameterModifiersOpt);}
-    ;
-    
-/** Closure parameters are exactly like method parameters,
- *  except that they are not enclosed in parentheses, but rather
- *  are prepended to the front of a block, just after the brace.
- *  They are separated from the closure body by a CLOSABLE_BLOCK_OP token '->'.
- */
-// With '|' there would be restrictions on bitwise-or expressions.
-closableBlockParamsOpt[boolean addImplicit]
-    :   (parameterDeclarationList nls CLOSABLE_BLOCK_OP)=>
-        parameterDeclarationList nls! CLOSABLE_BLOCK_OP! nls!
-    |   {addImplicit}?
-        implicitParameters
-    |
-        /* else do not parse any parameters at all */
-    ;
-
-/** Lookahead to check whether a block begins with explicit closure arguments. */
-closableBlockParamsStart!
-    :
-        nls parameterDeclarationList nls CLOSABLE_BLOCK_OP
-    ;
-
-/** Simple names, as in {x|...}, are completely equivalent to {(def x)|...}.  Build the right AST. */
-closableBlockParam/*!*/  
-	@init {Token first = LT(1);}
-    :   id=IDENT!
-        {#closableBlockParam = #(create(PARAMETER_DEF,"PARAMETER_DEF",first,LT(1)),
-                               #(create(MODIFIERS,"MODIFIERS",first,LT(1))), #(create(TYPE,"TYPE",first,LT(1))),
-                               id);}
-    ;
-  
-// Compound statement. This is used in many contexts:
-// Inside a class definition prefixed with "static":
-// it is a class initializer
-// Inside a class definition without "static":
-// it is an instance initializer
-// As the body of a method
-// As a completely independent braced block of code inside a method
-// it starts a new scope for variable definitions
-// In Groovy, this is called an "open block".  It cannot have closure arguments.
-
-compoundStatement
-    :   openBlock
-    ;
-
-/** An open block is not allowed to have closure arguments. */
-openBlock  
-	@init {Token first = LT(1);}
-    :   LCURLY! nls!
-        // AST type of SLIST means "never gonna be a closure"
-        bb=blockBody[EOF]!
-        RCURLY!
-        {#openBlock = #(create(SLIST,"{",first,LT(1)),bb);}
-
-    ;
-
-/** A block body is a parade of zero or more statements or expressions. */
-blockBody[int prevToken]
-    :
-        //TODO:
-    ;
-            
-/** A block which is known to be a closure, even if it has no apparent arguments.
- *  A block inside an expression or after a method call is always assumed to be a closure.
- *  Only labeled, unparameterized blocks which occur directly as substatements are kept open.
- */
-closableBlock  
-	@init {Token first = LT(1);}
-    :   LCURLY! nls!
-        cbp=closableBlockParamsOpt[true]!
-        bb=blockBody[EOF]!
-        RCURLY!
-        {#closableBlock = #(create(CLOSABLE_BLOCK,"{",first,LT(1)),cbp,bb);}
-    ;
-    
-
-stringConstructorValuePart
-    :
-    (   identifier
-    |   'this' |   'super'
-    |   openOrClosableBlock
-    )
     ;    
 
-/** A member name (x.y) or element name (x[y]) can serve as a command name,
- *  which may be followed by a list of arguments.
- *  Unlike parenthesized arguments, these must be plain expressions,
- *  without labels or spread operators.
- */
-commandArguments[AST head]
-@init {
-	Token first = LT(1);
-}
+// A builtin type specification is a builtin type with possible brackets
+// afterwards (which would make it an array type).
+builtInTypeSpec[boolean addImagNode]  
+	@init {Token first = LT(1);}
+    :   bt=builtInType!
+        declaratorBrackets[bt]
+//TODO:        {
+//            if ( addImagNode ) {
+//                #builtInTypeSpec = #(create(TYPE,"TYPE",first,LT(1)), #builtInTypeSpec);
+//            }
+//        }
+    ; 
+    
+// A type specification is a type name with possible brackets afterwards
+// (which would make it an array type).
+// Set addImagNode true for types inside expressions, not declarations.
+typeSpec[boolean addImagNode]
+    :    classTypeSpec[addImagNode]
+    |    builtInTypeSpec[addImagNode]
+    ;
+
+// also check that 'classOrInterfaceType[false]' is a suitable substitution for 'identifier'
+
+// A class type specification is a class type with either:
+// - possible brackets afterwards
+//   (which would make it an array type).
+// - generic type arguments after
+classTypeSpec[boolean addImagNode]  
+	@init {Token first = LT(1);}
+    :   ct=classOrInterfaceType[false]!
+        declaratorBrackets[ct]
+//TODO:        {
+//TODO:            if ( addImagNode ) {
+//TODO:                #classTypeSpec = #(create(TYPE,"TYPE",first,LT(1)), #classTypeSpec);
+//TODO:            }
+//TODO:        }
+    ;
+    
+    
+    // A non-built in type name, with possible type parameters
+classOrInterfaceType[boolean addImagNode] 
+	@init {Token first = LT(1);}
+    :   i1=IDENT^ (typeArguments|typeArgumentsDiamond)?
+
+        (   options{greedy=true;}: // match as many as possible
+            d=DOT!
+            i2=IDENT! (ta=typeArguments!)?
+//TODO:            {#i1 = #(create(DOT,".",first,LT(1)),i1,i2,ta);}
+        )*
+//TODO:        {
+//TODO:            #classOrInterfaceType = #i1;
+//TODO:            if ( addImagNode ) {
+//TODO:                #classOrInterfaceType = #(create(TYPE,"TYPE",first,LT(1)), #classOrInterfaceType);
+//TODO:            }
+//TODO:        }
+    ;
+    
+// A specialised form of typeSpec where built in types must be arrays
+typeArgumentSpec
+    :   classTypeSpec[true]
+    |   builtInTypeArraySpec[true]
+    ;
+
+// A generic type argument is a class type, a possibly bounded wildcard type or a built-in type array
+
+wildcardType
+    :   QUESTION
+        (('extends' | 'super')=> typeArgumentBounds)?
+        {#wildcardType.setType(WILDCARD_TYPE);}
+	;
+        
+typeArgument  
+	@init {Token first = LT(1);}
+    :   (   typeArgumentSpec
+        |   wildcardType
+        )
+//TODO:        {#typeArgument = #(create(TYPE_ARGUMENT,"TYPE_ARGUMENT",first,LT(1)), #typeArgument);}
+    ;
+
+// Wildcard type indicating all types (with possible constraint)
+
+typeArgumentsDiamond
+@init {Token first = LT(1);}
+    :   LT! GT! nls!
+    ;
+
+// Type arguments to a class or interface type
+typeArguments
+@int {Token first = LT(1);
+int currentLtLevel = 0;}
     :
-        commandArgument ( options {greedy=true;}: COMMA! nls! commandArgument )*
-        // println 2+2 //OK
-        // println(2+2) //OK
-        // println (2)+2 //BAD
-        // println((2)+2) //OK
-        // (println(2)+2) //OK
-        // compare (2), 2 //BAD
-        // compare( (2), 2 ) //OK
-        // foo.bar baz{bat}, bang{boz} //OK
+        {currentLtLevel = ltCounter;}
+        LT! {ltCounter++;} nls!
+        typeArgument
+        (   options{greedy=true;}: // match as many as possible
+            {inputState.guessing !=0 || ltCounter == currentLtLevel + 1}?
+            COMMA! nls! typeArgument
+        )*
+        nls!
+        (   // turn warning off since Antlr generates the right code,
+            // plus we have our semantic predicate below
+            //options{generateAmbigWarnings=false;}:
+            typeArgumentsOrParametersEnd
+        )?
+
+        // make sure we have gobbled up enough '>' characters
+        // if we are at the "top level" of nested typeArgument productions
+        {matchGenericTypeBrackets(((currentLtLevel != 0) || ltCounter == currentLtLevel),
+        "Missing closing bracket '>' for generics types", "Please specify the missing bracket!")}?
+
+        {#typeArguments = #(create(TYPE_ARGUMENTS, "TYPE_ARGUMENTS",first,LT(1)), #typeArguments);}
+    ;
+
+// this gobbles up *some* amount of '>' characters, and counts how many
+// it gobbled.
+fragment typeArgumentsOrParametersEnd
+    :   GT! {ltCounter-=1;}
+    |   SR! {ltCounter-=2;}
+    |   BSR! {ltCounter-=3;}
+    ;
+
+// Restriction on wildcard types based on super class or derived class
+typeArgumentBounds
+    @init {Token first = LT(1);boolean isUpperBounds = false;}
+    :
+        ( 'extends'! {isUpperBounds=true;} | 'super'! ) nls! classOrInterfaceType[true] nls!
         {
-            AST elist = #(create(ELIST,"ELIST",first,LT(1)), #commandArguments);
-            AST headid = #(create(METHOD_CALL,"<command>",first,LT(1)), head, elist);
-            #commandArguments = headid;
+            if (isUpperBounds)
+            {
+                #typeArgumentBounds = #(create(TYPE_UPPER_BOUNDS,"TYPE_UPPER_BOUNDS",first,LT(1)), #typeArgumentBounds);
+            }
+            else
+            {
+                #typeArgumentBounds = #(create(TYPE_LOWER_BOUNDS,"TYPE_LOWER_BOUNDS",first,LT(1)), #typeArgumentBounds);
+            }
         }
     ;
 
-commandArgumentsGreedy[AST head]
-@init { 
-	AST prev = null;
-}
-    :
-        { #prev = #head; }
-        
-        // argument to the already existing method name
-        (   ({#prev.getType()!=METHOD_CALL}? commandArgument)=> (   
-                first=commandArguments[head]!
-                { #prev = #first; }
-            )
-            |
+// A builtin type array specification is a builtin type with brackets afterwards
+builtInTypeArraySpec[boolean addImagNode]  
+	@init {Token first = LT(1);}
+    :   bt=builtInType!
+        (   (LBRACK)=>   // require at least one []
+            declaratorBrackets[#bt]
+        |   {require(false,
+                          "primitive type parameters not allowed here",
+                           "use the corresponding wrapper type, such as Integer for int"
+                           );}
         )
-        
-        // we start a series of methods and arguments
-        (   options { greedy = true; } :
-            (   options { greedy = true; } :
-                // method name
-                pre=primaryExpression!
-                { #prev = #(create(DOT, ".", #prev), #prev, #pre); }
-                // what follows is either a normal argument, parens, 
-                // an appended block, an index operation, or nothing
-                // parens (a b already processed): 
-                //      a b c() d e -> a(b).c().d(e)
-                //      a b c()() d e -> a(b).c().call().d(e)
-                // index (a b already processed): 
-                //      a b c[x] d e -> a(b).c[x].d(e)
-                //      a b c[x][y] d e -> a(b).c[x][y].d(e)
-                // block (a b already processed):
-                //      a b c {x} d e -> a(b).c({x}).d(e)
-                //
-                // parens/block completes method call
-                // index makes method call to property get with index
-                // 
-                (options {greedy=true;}:
-                (pathElementStart)=>   
-                    (   
-                        pc=pathChain[LC_STMT,#prev]!
-                        { #prev = #pc; }
-                    )      
-                |
-                    (   ca=commandArguments[#prev]!
-                        { #prev = #ca; })
-                )?
-            )*
-        )
-        { #commandArgumentsGreedy = prev; } 
+        {
+            if ( addImagNode ) {
+                #builtInTypeArraySpec = #(create(TYPE,"TYPE",first,LT(1)), #builtInTypeArraySpec);
+            }
+        }
+    ;                      
+
+/** After some type names, where zero or more empty bracket pairs are allowed.
+ *  We use ARRAY_DECLARATOR to represent this.
+ *  TODO:  Is there some more Groovy way to view this in terms of the indexed property syntax?
+ */
+declaratorBrackets[AST typ]
+    :   
+//TODO:    	{#declaratorBrackets=typ;}
+    	(
+            // A following list constructor might conflict with index brackets; prefer the declarator.
+            options {greedy=true;} :
+            LBRACK!
+            RBRACK!
+//TODO:            {#declaratorBrackets = #(create(ARRAY_DECLARATOR,"[",typ,LT(1)),#declaratorBrackets);}
+        )*
     ;
 
-commandArgument
-    :
-        (argumentLabel COLON nls!) => (
-            argumentLabel c=COLON^ nls! expression[0]  { #c.setType(LABELED_ARG); }
-        )
-        | expression[0]
-    ;
-    
 // expressions
 // Note that most of these expressions follow the pattern
 //   thisLevelExpression :
@@ -869,11 +683,94 @@ openOrClosableBlock
         cp=closableBlockParamsOpt[false]!
         bb=blockBody[EOF]!
         RCURLY!
-        {
-            if (#cp == null)    #openOrClosableBlock = #(create(SLIST,"{",first,LT(1)),bb);
-            else                #openOrClosableBlock = #(create(CLOSABLE_BLOCK,"{",first,LT(1)),cp,bb);
-        }
+//TODO:        {
+//            if (#cp == null)    #openOrClosableBlock = #(create(SLIST,"{",first,LT(1)),bb);
+//            else                #openOrClosableBlock = #(create(CLOSABLE_BLOCK,"{",first,LT(1)),cp,bb);
+//        }
     ;
+    
+/** A block body is a parade of zero or more statements or expressions. */
+blockBody[int prevToken]
+    :
+        //TODO:
+    ;    
+    
+/** Closure parameters are exactly like method parameters,
+ *  except that they are not enclosed in parentheses, but rather
+ *  are prepended to the front of a block, just after the brace.
+ *  They are separated from the closure body by a CLOSABLE_BLOCK_OP token '->'.
+ */
+// With '|' there would be restrictions on bitwise-or expressions.
+closableBlockParamsOpt[boolean addImplicit]
+    :   (parameterDeclarationList nls CLOSABLE_BLOCK_OP)=>
+        parameterDeclarationList nls! CLOSABLE_BLOCK_OP! nls!
+    |   {addImplicit}?
+        implicitParameters
+    |
+        /* else do not parse any parameters at all */
+    ;
+
+/** A list of zero or more formal parameters.
+ *  If a parameter is variable length (e.g. String... myArg) it should be
+ *  to the right of any other parameters of the same kind.
+ *  General form:  (req, ..., opt, ..., [rest], key, ..., [restKeys], [block]
+ *  This must be sorted out after parsing, since the various declaration forms
+ *  are impossible to tell apart without backtracking.
+ */
+parameterDeclarationList  
+	@init {Token first = LT(1);}
+    :
+        (
+            parameterDeclaration
+            (   COMMA! nls!
+                parameterDeclaration
+            )*
+        )?
+//TODO:        {#parameterDeclarationList = #(create(PARAMETERS,"PARAMETERS",first,LT(1)),
+//TODO:                                       #parameterDeclarationList);}
+    ;
+
+/** A formal parameter for a method or closure. */
+parameterDeclaration/*!*/
+    @init { Token first = LT(1);boolean spreadParam = false; }
+    :
+        pm=parameterModifiersOpt
+        (   options {greedy=true;} :
+            t=typeSpec[false]
+        )?
+
+        // TODO:  What do formal parameters for keyword arguments look like?
+
+        // Java-style var args
+        ( TRIPLE_DOT! { spreadParam = true; } )?
+
+        id=IDENT
+
+        // allow an optional default value expression
+        (exp=varInitializer)?
+
+        /*OBS*pd:declaratorBrackets[#t]*/
+//TODO:        {
+//TODO:            if (spreadParam) {
+//TODO:                #parameterDeclaration = #(create(VARIABLE_PARAMETER_DEF,"VARIABLE_PARAMETER_DEF",first,LT(1)),
+//TODO:                      pm, #(create(TYPE,"TYPE",first,LT(1)),t), id, exp);
+//TODO:            } else {
+//TODO:                #parameterDeclaration = #(create(PARAMETER_DEF,"PARAMETER_DEF",first,LT(1)),
+//TODO:                      pm, #(create(TYPE,"TYPE",first,LT(1)),t), id, exp);
+//TODO:            }
+//TODO:        }
+    ;
+
+parameterModifiersOpt
+    @init    { Token first = LT(1);int seenDef = 0; }
+        //final and/or def can appear amongst annotations in any order
+    :   (   {seenDef++ == 0}?       // do not allow multiple "def" tokens
+            'def'!  nls!            // redundant, but allowed for symmetry
+        |   'final' nls!
+        |   annotation nls!
+        )*
+//TODO:        {#parameterModifiersOpt = #(create(MODIFIERS,"MODIFIERS",first,LT(1)), #parameterModifiersOpt);}
+    ;        
 
 /** A block known to be a closure, but which omits its arguments, is given this placeholder.
  *  A subsequent pass is responsible for deciding if there is an implicit 'it' parameter,
@@ -881,7 +778,7 @@ openOrClosableBlock
  */
 implicitParameters  
 	@init {Token first = LT(1);}
-    :   {   #implicitParameters = #(create(IMPLICIT_PARAMETERS,"IMPLICIT_PARAMETERS",first,LT(1)));  }
+    ://TODO:   {   #implicitParameters = #(create(IMPLICIT_PARAMETERS,"IMPLICIT_PARAMETERS",first,LT(1)));  }
     ;
 
 /** If a dot is followed by a parenthesized or quoted expression, the member is computed dynamically,
@@ -890,10 +787,10 @@ implicitParameters
 dynamicMemberName  
 	@init {Token first = LT(1);}
     :   (   pe=parenthesizedExpression!
-            {#dynamicMemberName = #(create(EXPR,"EXPR",first,LT(1)),pe);}
+//TODO:            {#dynamicMemberName = #(create(EXPR,"EXPR",first,LT(1)),pe);}
         |   // TODO: stringConstructorExpression
         )
-        { #dynamicMemberName = #(create(DYNAMIC_MEMBER, "DYNAMIC_MEMBER",first,LT(1)), #dynamicMemberName); }
+//TODO:        { #dynamicMemberName = #(create(DYNAMIC_MEMBER, "DYNAMIC_MEMBER",first,LT(1)), #dynamicMemberName); }
     ;
 
 /** An expression may be followed by [...].
@@ -907,15 +804,121 @@ indexPropertyArgs[AST indexee]
         lb=LBRACK
         al=argList!
         RBRACK!
-        { if (indexee != null && indexee.getFirstChild() != null) {
+//TODO:        { if (indexee != null && indexee.getFirstChild() != null) {
               //expression like obj.index[]
-              #indexPropertyArgs = #(create(INDEX_OP, "INDEX_OP",indexee.getFirstChild(),LT(1)), lb, indexee, al);
-          } else {
+//              #indexPropertyArgs = #(create(INDEX_OP, "INDEX_OP",indexee.getFirstChild(),LT(1)), lb, indexee, al);
+//          } else {
               //expression like obj[]
-              #indexPropertyArgs = #(create(INDEX_OP, "INDEX_OP",indexee,LT(1)), lb, indexee, al);
-          }
+//              #indexPropertyArgs = #(create(INDEX_OP, "INDEX_OP",indexee,LT(1)), lb, indexee, al);
+//          }
+//        }
+    ;
+    
+argList
+    @init {
+        Token first = LT(1);
+        Token lastComma = null;
+        int hls=0, hls2=0;
+        boolean hasClosureList=false;
+        boolean trailingComma=false;
+        boolean sce=false;
+    }
+    :
+        // Note:  nls not needed, since we are inside parens,
+        // and those insignificant newlines are suppressed by the lexer.
+        (hls=argument
+        ((
+            (
+                SEMI! {hasClosureList=true;}
+                (
+                    sce=strictContextExpression[true]
+                    | { astFactory.addASTChild(currentAST,astFactory.create(EMPTY_STAT, "EMPTY_STAT")); }
+                )
+            )+
+//TODO:            {#argList = #(create(CLOSURE_LIST,"CLOSURE_LIST",first,LT(1)),#argList);}
+        ) | (
+                (   {lastComma = LT(1);}
+                    COMMA!
+                    (
+                        (hls2=argument {hls |= hls2;})
+                        |
+                        (
+                         {  if (trailingComma) throw new NoViableAltException(lastComma, getFilename());
+                            trailingComma=true;
+                         }
+                        )
+                    )
+
+                )*
+//TODO:                {#argList = #(create(ELIST,"ELIST",first,LT(1)), argList);}
+            )
+        ) | (
+//TODO:            {#argList = create(ELIST,"ELIST",first,LT(1));}
+        )
+        )
+        {argListHasLabels = (hls&1)!=0; }
+    ;
+    
+/** A single argument in (...) or [...].  Corresponds to to a method or closure parameter.
+ *  May be labeled.  May be modified by the spread operator '*' ('*:' for keywords).
+ */
+argument
+returns [byte hasLabelOrSpread = 0]
+@init {boolean sce=false;}
+    :
+        // Optional argument label.
+        // Usage:  Specifies a map key, or a keyworded argument.
+        (   (argumentLabelStart) =>
+            argumentLabel c=COLON^          {#c.setType(LABELED_ARG);}
+
+            {   hasLabelOrSpread |= 1;  }  // signal to caller the presence of a label
+
+        |   // Spread operator:  f(*[a,b,c])  ===  f(a,b,c);  f(1,*null,2)  ===  f(1,2).
+            sp=STAR^                        {#sp.setType(SPREAD_ARG);}
+            {   hasLabelOrSpread |= 2;  }  // signal to caller the presence of a spread operator
+            // spread maps are marked, as f(*:m) for f(a:x, b:y) if m==[a:x, b:y]
+            (
+                COLON!                      {#sp.setType(SPREAD_MAP_ARG);}
+                { hasLabelOrSpread |= 1; }  // signal to caller the presence of a label
+            )?
+        )?
+
+        sce=strictContextExpression[true]
+        {
+            require(LA(1) != COLON,
+                "illegal colon after argument expression",
+                "a complex label expression before a colon must be parenthesized");
         }
     ;
+    
+/** A label for an argument is of the form a:b, 'a':b, "a":b, (a):b, etc..
+ *      The labels in (a:b), ('a':b), and ("a":b) are in all ways equivalent,
+ *      except that the quotes allow more spellings.
+ *  Equivalent dynamically computed labels are (('a'):b) and ("${'a'}":b)
+ *  but not ((a):b) or "$a":b, since the latter cases evaluate (a) as a normal identifier.
+ *      Bottom line:  If you want a truly variable label, use parens and say ((a):b).
+ */
+argumentLabel
+    :   (IDENT) =>
+        id=IDENT                  {#id.setType(STRING_LITERAL);}  // identifiers are self-quoting in this context
+    |   (keywordPropertyNames) =>
+        kw=keywordPropertyNames   {#kw.setType(STRING_LITERAL);}  // identifiers are self-quoting in this context
+    |   primaryExpression                                         // dynamic expression
+    ;
+
+/** For lookahead only.  Fast approximate parse of an argumentLabel followed by a colon. */
+argumentLabelStart!
+        // allow number and string literals as labels for maps
+    :   (
+            IDENT | keywordPropertyNames
+        |   constantNumber | STRING_LITERAL
+        |   (
+        	LPAREN 
+//TODO        	| STRING_CTOR_START
+        	)=> balancedBrackets
+        )
+        COLON
+    ;        
 
 // assignment expression (level 15)
 assignmentExpression[int lc_stmt]
@@ -1116,144 +1119,88 @@ postfixExpression[int lc_stmt]
         )?
     ;
 
-// TODO:  Move pathExpression to this point in the file.
-
-// the basic element of an expression
-primaryExpression 
-	@init {Token first = LT(1);}
-    :   IDENT
-        /*OBS*  //keywords can follow dot in Groovy; no need for this special case
-        ( options {greedy=true;} : DOT^ "class" )?
-        *OBS*/
-    |   constant
-    |   //TODO: newExpression
-    |   'this'
-    |   'super'
-    |   pe=parenthesizedExpression!             // (general stuff...)
-        {#primaryExpression = #(create(EXPR,"EXPR",first,LT(1)),pe);}
-    |   //TODO: closableBlockConstructorExpression
-    |   listOrMapConstructorExpression
-    |   //TODO: stringConstructorExpression         // "foo $bar baz"; presented as multiple tokens
-//deprecated    |   scopeEscapeExpression               // $x
-    |   builtInType
-    /*OBS*  //class names work fine as expressions
-            // look for int.class and int[].class
-    |   bt:builtInType!
-        declaratorBrackets[bt]
-        DOT^ nls! "class"
-    *OBS*/
+/** An IDENT token whose spelling is required to start with an uppercase letter.
+ *  In the case of a simple statement {UpperID name} the identifier is taken to be a type name, not a command name.
+ */
+upperCaseIdent
+    :   {isUpperCase(LT(1))}?
+        IDENT
     ;
-
-// Note:  This is guaranteed to be an EXPR AST.
-// That is, parentheses are preserved, in case the walker cares about them.
-// They are significant sometimes, as in (f(x)){y} vs. f(x){y}.
-parenthesizedExpression
-@init {   Token first = LT(1);
-    Token declaration = null;
-    boolean hasClosureList=false;
-    boolean firstContainsDeclaration=false;
-    boolean sce=false;
+ 
+/** A member name (x.y) or element name (x[y]) can serve as a command name,
+ *  which may be followed by a list of arguments.
+ *  Unlike parenthesized arguments, these must be plain expressions,
+ *  without labels or spread operators.
+ */
+commandArguments[AST head]
+@init {
+	Token first = LT(1);
 }
-    :   LPAREN!
-           { declaration=LT(1); }
-           firstContainsDeclaration = strictContextExpression[true]
-           (SEMI!
-             {hasClosureList=true;}
-             (sce=strictContextExpression[true] | { astFactory.addASTChild(currentAST,astFactory.create(EMPTY_STAT, "EMPTY_STAT")); })
-           )*
-           // if the first expression contained a declaration,
-           // but we are having only one expression at all, then
-           // the first declaration is of the kind (def a=b)
-           // which is invalid. Therefore if there was no closure
-           // list we let the compiler throw an error if the
-           // the first declaration exists
-           {
-            if (firstContainsDeclaration && !hasClosureList)
-               throw new NoViableAltException(declaration, getFilename());
-           }
-        RPAREN!
-        {
-            if (hasClosureList) {
-                #parenthesizedExpression = #(create(CLOSURE_LIST,"CLOSURE_LIST",first,LT(1)),#parenthesizedExpression);
-            }
-        }
+    :
+        commandArgument ( options {greedy=true;}: COMMA! nls! commandArgument )*
+        // println 2+2 //OK
+        // println(2+2) //OK
+        // println (2)+2 //BAD
+        // println((2)+2) //OK
+        // (println(2)+2) //OK
+        // compare (2), 2 //BAD
+        // compare( (2), 2 ) //OK
+        // foo.bar baz{bat}, bang{boz} //OK
+//TODO:        {
+//TODO:            AST elist = #(create(ELIST,"ELIST",first,LT(1)), #commandArguments);
+//TODO:            AST headid = #(create(METHOD_CALL,"<command>",first,LT(1)), head, elist);
+//TODO:            #commandArguments = headid;
+//TODO:        }
     ;
 
-/** Things that can show up as expressions, but only in strict
- *  contexts like inside parentheses, argument lists, and list constructors.
- */
-strictContextExpression[boolean allowDeclaration]
-returns [boolean hasDeclaration=false]
-@init {Token first = LT(1);}
+commandArgumentsGreedy[AST head]
+@init { 
+	AST prev = null;
+}
     :
-        (   ({allowDeclarpathChaination}? declarationStart)=>
-            {hasDeclaration=true;} singleDeclaration  // used for both binding and value, as: while (String xx = nextln()) { println xx }
-        |   expression[0]
-        |   //TODO: branchStatement // useful to embed inside expressions (cf. C++ throw)
-        |   annotation      // creates an annotation value
+        { #prev = #head; }
+        
+        // argument to the already existing method name
+        (   ({#prev.getType()!=METHOD_CALL}? commandArgument)=> (   
+                first=commandArguments[head]!
+                { #prev = #first; }
+            )
+            |
         )
-        // For the sake of the AST walker, mark nodes like this very clearly.
-        {#strictContextExpression = #(create(EXPR,"EXPR",first,LT(1)),#strictContextExpression);}
-    ;
-
-assignmentLessExpression  
-	@init {Token first = LT(1);}
-    :
-        (   conditionalExpression[0]
+        
+        // we start a series of methods and arguments
+        (   options { greedy = true; } :
+            (   options { greedy = true; } :
+                // method name
+                pre=primaryExpression!
+//TODO:                { #prev = #(create(DOT, ".", #prev), #prev, #pre); }
+                // what follows is either a normal argument, parens, 
+                // an appended block, an index operation, or nothing
+                // parens (a b already processed): 
+                //      a b c() d e -> a(b).c().d(e)
+                //      a b c()() d e -> a(b).c().call().d(e)
+                // index (a b already processed): 
+                //      a b c[x] d e -> a(b).c[x].d(e)
+                //      a b c[x][y] d e -> a(b).c[x][y].d(e)
+                // block (a b already processed):
+                //      a b c {x} d e -> a(b).c({x}).d(e)
+                //
+                // parens/block completes method call
+                // index makes method call to property get with index
+                // 
+                (options {greedy=true;}:
+                (pathElementStart)=>   
+                    (   
+                        pc=pathChain[LC_STMT,prev]!
+                        { prev = pc; }
+                    )      
+                |
+                    (   ca=commandArguments[prev]!
+                        { prev = ca; })
+                )?
+            )*
         )
-        // For the sake of the AST walker, mark nodes like this very clearly.
-        {#assignmentLessExpression = #(create(EXPR,"EXPR",first,LT(1)),#assignmentLessExpression);}
-    ;
-
-expressionStatementNoCheck
-    @init { boolean isPathExpr = false; }
-    :
-        // Checks are now out of the way; here's the real rule:
-        head=expression[LC_STMT]
-        { isPathExpr = (#head == lastPathExpression); }
-        (
-            // A path expression (e.g., System.out.print) can take arguments.
-            {LA(1)!=LITERAL_else && isPathExpr /*&& #head.getType()==METHOD_CALL*/}?
-            cmd=commandArgumentsGreedy[#head]!
-            {
-                #expressionStatementNoCheck = #cmd;
-            }
-        )?
-    ;
-
-
-
-/**
- * A list constructor is a argument list enclosed in square brackets, without labels.
- * Any argument can be decorated with a spread operator (*x), but not a label (a:x).
- * Examples:  [], [1], [1,2], [1,*l1,2], [*l1,*l2].
- * (The l1, l2 must be a sequence or null.)
- * <p>
- * A map constructor is an argument list enclosed in square brackets, with labels everywhere,
- * except on spread arguments, which stand for whole maps spliced in.
- * A colon alone between the brackets also forces the expression to be an empty map constructor.
- * Examples: [:], [a:1], [a:1,b:2], [a:1,*:m1,b:2], [*:m1,*:m2]
- * (The m1, m2 must be a map or null.)
- * Values associated with identical keys overwrite from left to right:
- * [a:1,a:2]  ===  [a:2]
- * <p>
- * Some malformed constructor expressions are not detected in the parser, but in a post-pass.
- * Bad examples: [1,b:2], [a:1,2], [:1].
- * (Note that method call arguments, by contrast, can be a mix of keyworded and non-keyworded arguments.)
- */
-// The parser allows a mix of labeled and unlabeled arguments, but there must be a semantic check that
-// the arguments are all labeled (or SPREAD_MAP_ARG) or all unlabeled (and not SPREAD_MAP_ARG).
-listOrMapConstructorExpression
-    @init    { boolean hasLabels = false; }
-    :   lcon=LBRACK!
-        args=argList                 { hasLabels |= argListHasLabels;  }  // any argument label implies a map
-        RBRACK!
-        {   int type = hasLabels ? MAP_CONSTRUCTOR : LIST_CONSTRUCTOR;
-            $listOrMapConstructorExpression = #(create(type,"[",lcon,LT(1)),args);
-        }
-    |
-        /* Special case:  [:] is an empty map constructor. */
-        emcon=LBRACK^  COLON! RBRACK! { #emcon.setType(MAP_CONSTRUCTOR) }
+//TODO:        { #commandArgumentsGreedy = prev; } 
     ;
 
 pathChain[int lc_stmt, AST prefix]
@@ -1284,7 +1231,147 @@ pathChain[int lc_stmt, AST prefix]
             { prefix = #apb; }
         )+
 
-        { #pathChain = prefix; }
+//TODO:        { #pathChain = prefix; }
+    ;
+
+/** An appended block follows any expression.
+ *  If the expression is not a method call, it is given an empty argument list.
+ */
+appendedBlock[AST callee]
+    :
+        /*  FIXME DECIDE: should appended blocks accept labels?
+        (   (IDENT COLON nls LCURLY)=>
+            IDENT c:COLON^ {#c.setType(LABELED_ARG);} nls!
+        )? */
+        cb=closableBlock!
+//TODO:        {
+//TODO:            // If the callee is itself a call, flatten the AST.
+//TODO:            if (callee != null && callee.getType() == METHOD_CALL) {
+//TODO:                #appendedBlock = #(create(METHOD_CALL, "(",callee,LT(1)),
+//TODO:                                   callee.getFirstChild(), cb);
+//TODO:            } else {
+//TODO:                #appendedBlock = #(create(METHOD_CALL, "{",callee,LT(1)), callee, cb);
+//TODO:            }
+//TODO:        }
+    ;
+   
+/** An open block is not allowed to have closure arguments. */
+openBlock  
+	@init {Token first = LT(1);}
+    :   LCURLY! nls!
+        // AST type of SLIST means "never gonna be a closure"
+        bb=blockBody[EOF]!
+        RCURLY!
+//TODO:        {#openBlock = #(create(SLIST,"{",first,LT(1)),bb);}
+
+    ;   
+   
+/** This is the grammar for what can follow a dot:  x.a, x.@a, x.&a, x.'a', etc.
+ *  Note: <code>typeArguments</code> is handled by the caller of <code>namePart</code>.
+ */
+namePart  
+	@init {Token first = LT(1);}
+    :
+        (   ats=AT^     {#ats.setType(SELECT_SLOT);}  )?
+        // foo.@bar selects the field (or attribute), not property
+
+        (   IDENT
+        |   sl=STRING_LITERAL {#sl.setType(IDENT);}
+            // foo.'bar' is in all ways same as foo.bar, except that bar can have an arbitrary spelling
+        |   dynamicMemberName
+        |
+            openBlock
+            // PROPOSAL, DECIDE:  Is this inline form of the 'with' statement useful?
+            // Definition:  a.{foo} === {with(a) {foo}}
+            // May cover some path expression use-cases previously handled by dynamic scoping (closure delegates).
+
+            // let's allow common keywords as property names
+        |   keywordPropertyNames
+        )
+
+        // (No, x.&@y is not needed; just say x.&y as Slot or some such.)
+    ;     
+    
+/** A block which is known to be a closure, even if it has no apparent arguments.
+ *  A block inside an expression or after a method call is always assumed to be a closure.
+ *  Only labeled, unparameterized blocks which occur directly as substatements are kept open.
+ */
+closableBlock  
+	@init {Token first = LT(1);}
+    :   LCURLY! nls!
+        cbp=closableBlockParamsOpt[true]!
+        bb=blockBody[EOF]!
+        RCURLY!
+//TODO:        {#closableBlock = #(create(CLOSABLE_BLOCK,"{",first,LT(1)),cbp,bb);}
+    ;
+
+/** A declaration with one declarator and no initialization, like a parameterDeclaration.
+ *  Used to parse loops like <code>for (int x in y)</code> (up to the <code>in</code> keyword).
+ */
+singleDeclarationNoInit!
+    :
+        // method/variable using a 'def' or a modifier; type is optional
+        m=modifiers
+        (t=typeSpec[false])?
+        v=singleVariable[#m, #t]
+//TODO:        {#singleDeclarationNoInit = #v;}
+    |
+        // method/variable using a type only
+        t2=typeSpec[false]
+        v2=singleVariable[null,#t2]
+//TODO:        {#singleDeclarationNoInit = #v2;}
+    ;
+
+/** A declaration with one declarator and optional initialization, like a parameterDeclaration.
+ *  Used to parse declarations used for both binding and effect, in places like argument
+ *  lists and <code>while</code> statements.
+ */
+singleDeclaration
+    :   sd=singleDeclarationNoInit!
+//TODO:        { #singleDeclaration = #sd; }
+        (varInitializer)?
+    ;
+
+
+/** An expression may be followed by one or both of (...) and {...}.
+ *  Note: If either is (...) or {...} present, it is a method call.
+ *  The {...} is appended to the argument list, and matches a formal of type Closure.
+ *  If there is no method member, a property (or field) is used instead, and must itself be callable.
+ *  <p>
+ *  If the methodCallArgs are absent, it is a property reference.
+ *  If there is no property, it is treated as a field reference, but never a method reference.
+ *  <p>
+ *  Arguments in the (...) can be labeled, and the appended block can be labeled also.
+ *  If there is a mix of unlabeled and labeled arguments,
+ *  all the labeled arguments must follow the unlabeled arguments,
+ *  except that the closure (labeled or not) is always a separate final argument.
+ *  Labeled arguments are collected up and passed as a single argument to a formal of type Map.
+ *  <p>
+ *  Therefore, f(x,y, a:p, b:q) {s} is equivalent in all ways to f(x,y, [a:p,b:q], {s}).
+ *  Spread arguments of sequence type count as unlabeled arguments,
+ *  while spread arguments of map type count as labeled arguments.
+ *  (This distinction must sometimes be checked dynamically.)
+ *
+ *  A plain unlabeled argument is allowed to match a trailing Map or Closure argument:
+ *  f(x, a:p) {s}  ===  f(*[ x, [a:p], {s} ])
+ */
+// AST is [METHOD_CALL, callee, ELIST? CLOSABLE_BLOCK?].
+// Note that callee is often of the form x.y but not always.
+// If the callee is not of the form x.y, then an implicit .call is needed.
+// Parameter callee is only "null" when called from newExpression
+methodCallArgs[AST callee]
+    :
+        LPAREN!
+        al=argList!
+        RPAREN!
+//TODO:        { if (callee != null && callee.getFirstChild() != null) {
+//TODO:              //method call like obj.method()
+//TODO:              #methodCallArgs = #(create(METHOD_CALL, "(",callee.getFirstChild(),LT(1)), callee, al);
+//TODO:          } else {
+//TODO:              //method call like method() or new Expr(), in the latter case "callee" is null
+//TODO:              #methodCallArgs = #(create(METHOD_CALL, "(",callee, LT(1)), callee, al);
+//TODO:          }
+//TODO:        }
     ;
 
 /** A "path expression" is a name or other primary, possibly qualified by various
@@ -1325,10 +1412,10 @@ pathExpression[int lc_stmt]
             apb=appendedBlock[prefix]!
             { prefix = #apb; }
         )*
-        {
-            #pathExpression = prefix;
-            lastPathExpression = #pathExpression;
-        }
+//TODO:        {
+//TODO:            #pathExpression = prefix;
+//TODO:            lastPathExpression = #pathExpression;
+//TODO:        }
     ;
 
 pathElement[AST prefix] 
@@ -1347,7 +1434,8 @@ pathElement[AST prefix]
         ) nls!
         (ta=typeArguments!)?
         np=namePart!
-    pathElementStart    { #pathElement = #(create(operator.getType(),operator.getText(),prefix,LT(1)),prefix,ta,np); }
+    pathElementStart
+//TODO:        { #pathElement = #(create(operator.getType(),operator.getText(),prefix,LT(1)),prefix,ta,np); }
 
     |
         mca=methodCallArgs[prefix]!
@@ -1391,342 +1479,190 @@ pathElementStart!
     |   LPAREN
     |   LCURLY
     ;
-    
-/** This is the grammar for what can follow a dot:  x.a, x.@a, x.&a, x.'a', etc.
- *  Note: <code>typeArguments</code> is handled by the caller of <code>namePart</code>.
- */
-namePart  
-	@init {Token first = LT(1);}
+
+commandArgument
     :
-        (   ats=AT^     {#ats.setType(SELECT_SLOT);}  )?
-        // foo.@bar selects the field (or attribute), not property
-
-        (   IDENT
-        |   sl=STRING_LITERAL {#sl.setType(IDENT);}
-            // foo.'bar' is in all ways same as foo.bar, except that bar can have an arbitrary spelling
-        |   dynamicMemberName
-        |
-            openBlock
-            // PROPOSAL, DECIDE:  Is this inline form of the 'with' statement useful?
-            // Definition:  a.{foo} === {with(a) {foo}}
-            // May cover some path expression use-cases previously handled by dynamic scoping (closure delegates).
-
-            // let's allow common keywords as property names
-        |   keywordPropertyNames
+        (argumentLabel COLON nls!) => (
+            argumentLabel c=COLON^ nls! expression[0]  { #c.setType(LABELED_ARG); }
         )
-
-        // (No, x.&@y is not needed; just say x.&y as Slot or some such.)
-    ;    
-
-argList
-    @init {
-        Token first = LT(1);
-        Token lastComma = null;
-        int hls=0, hls2=0;
-        boolean hasClosureList=false;
-        boolean trailingComma=false;
-        boolean sce=false;
-    }
-    :
-        // Note:  nls not needed, since we are inside parens,
-        // and those insignificant newlines are suppressed by the lexer.
-        (hls=argument
-        ((
-            (
-                SEMI! {hasClosureList=true;}
-                (
-                    sce=strictContextExpression[true]
-                    | { astFactory.addASTChild(currentAST,astFactory.create(EMPTY_STAT, "EMPTY_STAT")); }
-                )
-            )+
-            {#argList = #(create(CLOSURE_LIST,"CLOSURE_LIST",first,LT(1)),#argList);}
-        ) | (
-                (   {lastComma = LT(1);}
-                    COMMA!
-                    (
-                        (hls2=argument {hls |= hls2;})
-                        |
-                        (
-                         {  if (trailingComma) throw new NoViableAltException(lastComma, getFilename());
-                            trailingComma=true;
-                         }
-                        )
-                    )
-
-                )*
-                {#argList = #(create(ELIST,"ELIST",first,LT(1)), argList);}
-            )
-        ) | (
-            {#argList = create(ELIST,"ELIST",first,LT(1));}
-        )
-        )
-        {argListHasLabels = (hls&1)!=0; }
-    ;
-    
-/** A single argument in (...) or [...].  Corresponds to to a method or closure parameter.
- *  May be labeled.  May be modified by the spread operator '*' ('*:' for keywords).
- */
-argument
-returns [byte hasLabelOrSpread = 0]
-@init {boolean sce=false;}
-    :
-        // Optional argument label.
-        // Usage:  Specifies a map key, or a keyworded argument.
-        (   (argumentLabelStart) =>
-            argumentLabel c=COLON^          {#c.setType(LABELED_ARG);}
-
-            {   hasLabelOrSpread |= 1;  }  // signal to caller the presence of a label
-
-        |   // Spread operator:  f(*[a,b,c])  ===  f(a,b,c);  f(1,*null,2)  ===  f(1,2).
-            sp=STAR^                        {#sp.setType(SPREAD_ARG);}
-            {   hasLabelOrSpread |= 2;  }  // signal to caller the presence of a spread operator
-            // spread maps are marked, as f(*:m) for f(a:x, b:y) if m==[a:x, b:y]
-            (
-                COLON!                      {#sp.setType(SPREAD_MAP_ARG);}
-                { hasLabelOrSpread |= 1; }  // signal to caller the presence of a label
-            )?
-        )?
-
-        sce=strictContextExpression[true]
-        {
-            require(LA(1) != COLON,
-                "illegal colon after argument expression",
-                "a complex label expression before a colon must be parenthesized");
-        }
-    ;
-
-/** A label for an argument is of the form a:b, 'a':b, "a":b, (a):b, etc..
- *      The labels in (a:b), ('a':b), and ("a":b) are in all ways equivalent,
- *      except that the quotes allow more spellings.
- *  Equivalent dynamically computed labels are (('a'):b) and ("${'a'}":b)
- *  but not ((a):b) or "$a":b, since the latter cases evaluate (a) as a normal identifier.
- *      Bottom line:  If you want a truly variable label, use parens and say ((a):b).
- */
-argumentLabel
-    :   (IDENT) =>
-        id=IDENT                  {#id.setType(STRING_LITERAL);}  // identifiers are self-quoting in this context
-    |   (keywordPropertyNames) =>
-        kw=keywordPropertyNames   {#kw.setType(STRING_LITERAL);}  // identifiers are self-quoting in this context
-    |   primaryExpression                                         // dynamic expression
-    ;
-
-/** For lookahead only.  Fast approximate parse of an argumentLabel followed by a colon. */
-argumentLabelStart!
-        // allow number and string literals as labels for maps
-    :   (
-            IDENT | keywordPropertyNames
-        |   constantNumber | STRING_LITERAL
-        |   (
-        	LPAREN 
-        	| STRING_CTOR_START
-        	)=> balancedBrackets
-        )
-        COLON
-    ;    
-    
-// A builtin type specification is a builtin type with possible brackets
-// afterwards (which would make it an array type).
-builtInTypeSpec[boolean addImagNode]  
-	@init {Token first = LT(1);}
-    :   bt=builtInType!
-        declaratorBrackets[#bt]
-        {
-            if ( addImagNode ) {
-                #builtInTypeSpec = #(create(TYPE,"TYPE",first,LT(1)), #builtInTypeSpec);
-            }
-        }
+        | expression[0]
     ; 
 
-/** Used only as a lookahead predicate for nested type declarations. */
-
-/*TODO* The lookahead in typeDeclarationStart needs to skip annotations, not
-just stop at '@', because variable and method declarations can also be
-annotated.
-> typeDeclarationStart!
->     :   (modifier!)* ("class" | "interface" | "enum" | AT )
-S.B. something like
->     :   (modifier! | annotationTokens!)* ("class" | "interface" |
-> "enum" )
-(And maybe @interface, if Java 5 allows nested annotation types? Don't
-know offhand.)
-Where annotationTokens can be a quick paren-skipper, as in other
-places: '@' ident '(' balancedTokens ')'.
-*/
-
-typeDeclarationStart!
-    :   modifiersOpt! ('class' | 'interface' | 'enum' | AT 'interface')
-    ;
-
-/** An IDENT token whose spelling is required to start with an uppercase letter.
- *  In the case of a simple statement {UpperID name} the identifier is taken to be a type name, not a command name.
+/**
+ * A list constructor is a argument list enclosed in square brackets, without labels.
+ * Any argument can be decorated with a spread operator (*x), but not a label (a:x).
+ * Examples:  [], [1], [1,2], [1,*l1,2], [*l1,*l2].
+ * (The l1, l2 must be a sequence or null.)
+ * <p>
+ * A map constructor is an argument list enclosed in square brackets, with labels everywhere,
+ * except on spread arguments, which stand for whole maps spliced in.
+ * A colon alone between the brackets also forces the expression to be an empty map constructor.
+ * Examples: [:], [a:1], [a:1,b:2], [a:1,*:m1,b:2], [*:m1,*:m2]
+ * (The m1, m2 must be a map or null.)
+ * Values associated with identical keys overwrite from left to right:
+ * [a:1,a:2]  ===  [a:2]
+ * <p>
+ * Some malformed constructor expressions are not detected in the parser, but in a post-pass.
+ * Bad examples: [1,b:2], [a:1,2], [:1].
+ * (Note that method call arguments, by contrast, can be a mix of keyworded and non-keyworded arguments.)
  */
-upperCaseIdent
-    :   {isUpperCase(LT(1))}?
-        IDENT
-    ;
-
-// A type specification is a type name with possible brackets afterwards
-// (which would make it an array type).
-// Set addImagNode true for types inside expressions, not declarations.
-typeSpec[boolean addImagNode]
-    :    classTypeSpec[addImagNode]
-    |    builtInTypeSpec[addImagNode]
-    ;
-
-// also check that 'classOrInterfaceType[false]' is a suitable substitution for 'identifier'
-
-// A class type specification is a class type with either:
-// - possible brackets afterwards
-//   (which would make it an array type).
-// - generic type arguments after
-classTypeSpec[boolean addImagNode]  
-	@init {Token first = LT(1);}
-    :   ct=classOrInterfaceType[false]!
-        declaratorBrackets[#ct]
-        {
-            if ( addImagNode ) {
-                #classTypeSpec = #(create(TYPE,"TYPE",first,LT(1)), #classTypeSpec);
-            }
-        }
-    ;
-
-// A non-built in type name, with possible type parameters
-classOrInterfaceType[boolean addImagNode] 
-	@init {Token first = LT(1);}
-    :   i1=IDENT^ (typeArguments|typeArgumentsDiamond)?
-
-        (   options{greedy=true;}: // match as many as possible
-            d=DOT!
-            i2=IDENT! (ta=typeArguments!)?
-            {#i1 = #(create(DOT,".",first,LT(1)),i1,i2,ta);}
-        )*
-        {
-            #classOrInterfaceType = #i1;
-            if ( addImagNode ) {
-                #classOrInterfaceType = #(create(TYPE,"TYPE",first,LT(1)), #classOrInterfaceType);
-            }
-        }
-    ;
-
-// A specialised form of typeSpec where built in types must be arrays
-typeArgumentSpec
-    :   classTypeSpec[true]
-    |   builtInTypeArraySpec[true]
-    ;
-
-// A generic type argument is a class type, a possibly bounded wildcard type or a built-in type array
-typeArgument  
-	@init {Token first = LT(1);}
-    :   (   typeArgumentSpec
-        |   wildcardType
-        )
-        {#typeArgument = #(create(TYPE_ARGUMENT,"TYPE_ARGUMENT",first,LT(1)), #typeArgument);}
-    ;
-
-// Wildcard type indicating all types (with possible constraint)
-wildcardType
-    :   QUESTION
-        (('extends' | 'super')=> typeArgumentBounds)?
-        {#wildcardType.setType(WILDCARD_TYPE);}
-    ;
-
-typeArgumentsDiamond
-@init {Token first = LT(1);}
-    :   LT! GT! nls!
-    ;
-
-// Type arguments to a class or interface type
-typeArguments
-@int {Token first = LT(1);
-int currentLtLevel = 0;}
-    :
-        {currentLtLevel = ltCounter;}
-        LT! {ltCounter++;} nls!
-        typeArgument
-        (   options{greedy=true;}: // match as many as possible
-            {inputState.guessing !=0 || ltCounter == currentLtLevel + 1}?
-            COMMA! nls! typeArgument
-        )*
-        nls!
-        (   // turn warning off since Antlr generates the right code,
-            // plus we have our semantic predicate below
-            //options{generateAmbigWarnings=false;}:
-            typeArgumentsOrParametersEnd
-        )?
-
-        // make sure we have gobbled up enough '>' characters
-        // if we are at the "top level" of nested typeArgument productions
-        {matchGenericTypeBrackets(((currentLtLevel != 0) || ltCounter == currentLtLevel),
-        "Missing closing bracket '>' for generics types", "Please specify the missing bracket!")}?
-
-        {#typeArguments = #(create(TYPE_ARGUMENTS, "TYPE_ARGUMENTS",first,LT(1)), #typeArguments);}
-    ;
-
-// this gobbles up *some* amount of '>' characters, and counts how many
-// it gobbled.
-fragment typeArgumentsOrParametersEnd
-    :   GT! {ltCounter-=1;}
-    |   SR! {ltCounter-=2;}
-    |   BSR! {ltCounter-=3;}
-    ;
-
-// Restriction on wildcard types based on super class or derived class
-typeArgumentBounds
-    @init {Token first = LT(1);boolean isUpperBounds = false;}
-    :
-        ( 'extends'! {isUpperBounds=true;} | 'super'! ) nls! classOrInterfaceType[true] nls!
-        {
-            if (isUpperBounds)
-            {
-                #typeArgumentBounds = #(create(TYPE_UPPER_BOUNDS,"TYPE_UPPER_BOUNDS",first,LT(1)), #typeArgumentBounds);
-            }
-            else
-            {
-                #typeArgumentBounds = #(create(TYPE_LOWER_BOUNDS,"TYPE_LOWER_BOUNDS",first,LT(1)), #typeArgumentBounds);
-            }
-        }
-    ;
-
-// A builtin type array specification is a builtin type with brackets afterwards
-builtInTypeArraySpec[boolean addImagNode]  
-	@init {Token first = LT(1);}
-    :   bt=builtInType!
-        (   (LBRACK)=>   // require at least one []
-            declaratorBrackets[#bt]
-        |   {require(false,
-                          "primitive type parameters not allowed here",
-                           "use the corresponding wrapper type, such as Integer for int"
-                           );}
-        )
-        {
-            if ( addImagNode ) {
-                #builtInTypeArraySpec = #(create(TYPE,"TYPE",first,LT(1)), #builtInTypeArraySpec);
-            }
-        }
-    ;
+// The parser allows a mix of labeled and unlabeled arguments, but there must be a semantic check that
+// the arguments are all labeled (or SPREAD_MAP_ARG) or all unlabeled (and not SPREAD_MAP_ARG).
+listOrMapConstructorExpression
+    @init    { boolean hasLabels = false; }
+    :   lcon=LBRACK!
+        args=argList                 { hasLabels |= argListHasLabels;  }  // any argument label implies a map
+        RBRACK!
+//TODO:        {   int type = hasLabels ? MAP_CONSTRUCTOR : LIST_CONSTRUCTOR;
+//TODO:            $listOrMapConstructorExpression = #(create(type,"[",lcon,LT(1)),args);
+//TODO:        }
+    |
+        /* Special case:  [:] is an empty map constructor. */
+        emcon=LBRACK^  COLON! RBRACK! { #emcon.setType(MAP_CONSTRUCTOR) }
+    ; 
     
-/** After some type names, where zero or more empty bracket pairs are allowed.
- *  We use ARRAY_DECLARATOR to represent this.
- *  TODO:  Is there some more Groovy way to view this in terms of the indexed property syntax?
+/** Used only as a lookahead predicate, before diving in and parsing a declaration.
+ *  A declaration can be unambiguously introduced with "def", an annotation or a modifier token like "final".
+ *  It may also be introduced by a simple identifier whose first character is an uppercase letter,
+ *  as in {String x}.  A declaration can also be introduced with a built in type like 'int' or 'void'.
+ *  Brackets (array and generic) are allowed, as in {List[] x} or {int[][] y}.
+ *  Anything else is parsed as a statement of some sort (expression or command).
+ *  <p>
+ *  (In the absence of explicit method-call parens, we assume a capitalized name is a type name.
+ *  Yes, this is a little hacky.  Alternatives are to complicate the declaration or command
+ *  syntaxes, or to have the parser query the symbol table.  Parse-time queries are evil.
+ *  And we want both {String x} and {println x}.  So we need a syntactic razor-edge to slip
+ *  between 'println' and 'String'.)
+ *
+ *   *TODO* The declarationStart production needs to be strengthened to recognize
+ *  things like {List<String> foo}.
+ *  Right now it only knows how to skip square brackets after the type, not
+ *  angle brackets.
+ *  This probably turns out to be tricky because of >> vs. > >. If so,
+ *  just put a TODO comment in.
  */
-declaratorBrackets[AST typ]
-    :   {#declaratorBrackets=typ;}
-        (
-            // A following list constructor might conflict with index brackets; prefer the declarator.
-            options {greedy=true;} :
-            LBRACK!
-            RBRACK!
-            {#declaratorBrackets = #(create(ARRAY_DECLARATOR,"[",typ,LT(1)),
-                               #declaratorBrackets);}
-        )*
-    ;
+declarationStart!
+    :   (     ('def' nls)
+            | modifier nls
+            | annotation nls
+            | (   upperCaseIdent
+                |   builtInType
+                |   qualifiedTypeName
+          
+    ) (typeArguments)? (LBRACK balancedTokens RBRACK)*
+        )+
+        ( IDENT | STRING_LITERAL )
+    ; 
     
-// A type name. which is either a (possibly qualified and parameterized)
-// class name or a primitive (builtin) type
-type
-    :   classOrInterfaceType[false]
+qualifiedTypeName!
+    :
+        IDENT DOT (IDENT DOT)* upperCaseIdent
+    ;   
+
+// TODO:  Move pathExpression to this point in the file.
+
+// the basic element of an expression
+primaryExpression 
+	@init {Token first = LT(1);}
+    :   IDENT
+        /*OBS*  //keywords can follow dot in Groovy; no need for this special case
+        ( options {greedy=true;} : DOT^ "class" )?
+        *OBS*/
+    |   constant
+    |   //TODO: newExpression
+    |   'this'
+    |   'super'
+    |   pe=parenthesizedExpression!             // (general stuff...)
+//TODO:        {#primaryExpression = #(create(EXPR,"EXPR",first,LT(1)),pe);}
+    |   //TODO: closableBlockConstructorExpression
+    |   listOrMapConstructorExpression
+    |   //TODO: stringConstructorExpression         // "foo $bar baz"; presented as multiple tokens
+//deprecated    |   scopeEscapeExpression               // $x
     |   builtInType
-    ;       
+    /*OBS*  //class names work fine as expressions
+            // look for int.class and int[].class
+    |   bt:builtInType!
+        declaratorBrackets[bt]
+        DOT^ nls! "class"
+    *OBS*/
+    ;
+
+// Note:  This is guaranteed to be an EXPR AST.
+// That is, parentheses are preserved, in case the walker cares about them.
+// They are significant sometimes, as in (f(x)){y} vs. f(x){y}.
+parenthesizedExpression
+@init {   Token first = LT(1);
+    Token declaration = null;
+    boolean hasClosureList=false;
+    boolean firstContainsDeclaration=false;
+    boolean sce=false;
+}
+    :   LPAREN!
+           { declaration=LT(1); }
+           firstContainsDeclaration = strictContextExpression[true]
+           (SEMI!
+             {hasClosureList=true;}
+             (sce=strictContextExpression[true] | { astFactory.addASTChild(currentAST,astFactory.create(EMPTY_STAT, "EMPTY_STAT")); })
+           )*
+           // if the first expression contained a declaration,
+           // but we are having only one expression at all, then
+           // the first declaration is of the kind (def a=b)
+           // which is invalid. Therefore if there was no closure
+           // list we let the compiler throw an error if the
+           // the first declaration exists
+           {
+            if (firstContainsDeclaration && !hasClosureList)
+               throw new NoViableAltException(declaration, getFilename());
+           }
+        RPAREN!
+//TODO:        {
+//            if (hasClosureList) {
+//                #parenthesizedExpression = #(create(CLOSURE_LIST,"CLOSURE_LIST",first,LT(1)),#parenthesizedExpression);
+//            }
+//        }
+    ;
+
+/** Things that can show up as expressions, but only in strict
+ *  contexts like inside parentheses, argument lists, and list constructors.
+ */
+strictContextExpression[boolean allowDeclaration]
+returns [boolean hasDeclaration=false]
+@init {Token first = LT(1);}
+    :
+        (   ({allowDeclarpathChaination}? declarationStart)=>
+            {hasDeclaration=true;} singleDeclaration  // used for both binding and value, as: while (String xx = nextln()) { println xx }
+        |   expression[0]
+        |   //TODO: branchStatement // useful to embed inside expressions (cf. C++ throw)
+        |   annotation      // creates an annotation value
+        )
+        // For the sake of the AST walker, mark nodes like this very clearly.
+//TODO:        {#strictContextExpression = #(create(EXPR,"EXPR",first,LT(1)),#strictContextExpression);}
+    ;
+
+assignmentLessExpression  
+	@init {Token first = LT(1);}
+    :
+        (   conditionalExpression[0]
+        )
+        // For the sake of the AST walker, mark nodes like this very clearly.
+//TODO:        {#assignmentLessExpression = #(create(EXPR,"EXPR",first,LT(1)),#assignmentLessExpression);}
+    ;
+
+expressionStatementNoCheck
+    @init { boolean isPathExpr = false; }
+    :
+        // Checks are now out of the way; here's the real rule:
+        head=expression[LC_STMT]
+        { isPathExpr = (#head == lastPathExpression); }
+        (
+            // A path expression (e.g., System.out.print) can take arguments.
+            {LA(1)!=LITERAL_else && isPathExpr /*&& #head.getType()==METHOD_CALL*/}?
+            cmd=commandArgumentsGreedy[#head]!
+            {
+                #expressionStatementNoCheck = #cmd;
+            }
+        )?
+    ;
 
 /** Numeric, string, regexp, boolean, or null constant. */
 constant
@@ -1740,11 +1676,11 @@ constant
 /** Numeric constant. */
 constantNumber
     :   NUM_INT
-    |   NUM_FLOAT
-    |   NUM_LONG
-    |   NUM_DOUBLE
-    |   NUM_BIG_INT
-    |   NUM_BIG_DECIMAL
+//TODO:    |   NUM_FLOAT
+//TODO:    |   NUM_LONG
+//TODO:    |   NUM_DOUBLE
+//TODO:    |   NUM_BIG_INT
+//TODO:    |   NUM_BIG_DECIMAL
     ;
 
 /** Fast lookahead across balanced brackets of all sorts. */
@@ -1752,12 +1688,12 @@ balancedBrackets!
     :   LPAREN balancedTokens RPAREN
     |   LBRACK balancedTokens RBRACK
     |   LCURLY balancedTokens RCURLY
-    |   STRING_CTOR_START balancedTokens STRING_CTOR_END
+//TODO:    |   STRING_CTOR_START balancedTokens STRING_CTOR_END
     ;
 
 balancedTokens!
     :   (   balancedBrackets
-        |   ~(LPAREN|LBRACK|LCURLY | STRING_CTOR_START
+        |   ~(LPAREN|LBRACK|LCURLY //TODO:| STRING_CTOR_START
              |RPAREN|RBRACK|RCURLY | STRING_CTOR_END)
         )*
     ;
@@ -1780,7 +1716,7 @@ sep!
             { sepToken = SEMI; }
         )*
     ;
-
+ 
 /** Zero or more insignificant newlines, all gobbled up and thrown away. */
 nls!
     :
