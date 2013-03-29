@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ package groovy.xml;
 
 /**
  * A simple helper class which acts as a factory of {@link QName} instances.
- * 
+ *
  * @version $Revision$
  */
 public class Namespace {
@@ -38,10 +38,10 @@ public class Namespace {
     }
 
     /**
-     * Returns the QName for the given localName.
-     * 
-     * @param localName
-     *            the local name within this
+     * Returns the {@code QName} for the given {@code localName}.
+     *
+     * @param localName the local name within this
+     * @return the {@code QName} for the given {@code localName}.
      */
     public QName get(String localName) {
         if (uri != null && uri.length() > 0) {
@@ -59,7 +59,7 @@ public class Namespace {
 
     /**
      * Returns the prefix mapped to this namespace
-     * 
+     *
      * @return the prefix assigned to this namespace or null if no namespace is
      *         mapped.
      */
@@ -69,7 +69,7 @@ public class Namespace {
 
     /**
      * Returns the URI of this namespace
-     * 
+     *
      * @return the URI of this namespace
      */
     public String getUri() {

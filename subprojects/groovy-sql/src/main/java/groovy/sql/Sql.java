@@ -51,7 +51,7 @@ import org.codehaus.groovy.runtime.SqlGroovyMethods;
  * prepared statements and treating result sets like collections
  * of maps with the normal Groovy collection methods available.
  *
- * <h4>Typical usage</h4>
+ * <h1>Typical usage</h1>
  *
  * First you need to set up your sql instance. There are several constructors
  * and a few <code>newInstance</code> factory methods available to do this.
@@ -95,7 +95,7 @@ import org.codehaus.groovy.runtime.SqlGroovyMethods;
  * Now try a query using <code>eachRow</code>:
  * <pre>
  * println 'Some GR8 projects:'
- * sql.eachRow('select * from PROJECT') { row ->
+ * sql.eachRow('select * from PROJECT') { row -&gt;
  *     println "${row.name.padRight(10)} ($row.url)"
  * }
  * </pre>
@@ -118,9 +118,9 @@ import org.codehaus.groovy.runtime.SqlGroovyMethods;
  * [ID:20, NAME:Grails, URL:http://grails.org]
  * [ID:40, NAME:Gradle, URL:http://gradle.org]
  * </pre>
- * Also, <code>eachRow</code> and <code>rows</code> support paging.  Here's an example: 
+ * Also, <code>eachRow</code> and <code>rows</code> support paging.  Here's an example:
  * <pre>
- * sql.eachRow('select * from PROJECT', 2, 2) { row ->
+ * sql.eachRow('select * from PROJECT', 2, 2) { row -&gt;
  *     println "${row.name.padRight(10)} ($row.url)"
  * }
  * </pre>
@@ -129,7 +129,7 @@ import org.codehaus.groovy.runtime.SqlGroovyMethods;
  * Grails     (http://grails.org)
  * Griffon    (http://griffon.codehaus.org)
  * </pre>
- * 
+ *
  * Finally, we should clean up:
  * <pre>
  * sql.close()
@@ -142,7 +142,7 @@ import org.codehaus.groovy.runtime.SqlGroovyMethods;
  * If instead of <code>newInstance</code> you use <code>withInstance</code>, then
  * <code>close()</code> will be called automatically for you.
  *
- * <h4>Avoiding SQL injection</h4>
+ * <h1>Avoiding SQL injection</h1>
  *
  * If you find yourself creating queries based on any kind of input from the user or
  * a 3rd party application you might wish to avoid the pure string method variants in this class.
@@ -158,10 +158,10 @@ import org.codehaus.groovy.runtime.SqlGroovyMethods;
  * <code>sql.firstRow("select * from PersonTable where SurnameColumn = $userInput")</code>
  * or the named parameter variants discussed next.
  *
- * <h4>Named and named ordinal parameters</h4>
+ * <h1>Named and named ordinal parameters</h1>
  *
  * Several of the methods in this class (ones which have a String-based sql query and params in
- * a List<Object> or Object[] or Map) support <em>named</em> or <em>named ordinal</em> parameters.
+ * a List&lt;Object&gt; or Object[] or Map) support <em>named</em> or <em>named ordinal</em> parameters.
  * These methods are useful for queries with large numbers of parameters - though the GString
  * variations are often preferred in such cases too. Reminder: when you see a variant with Object[] as
  * the type of the last parameter, Groovy allows vararg style parameters so you don't explicitly need to
@@ -206,7 +206,7 @@ import org.codehaus.groovy.runtime.SqlGroovyMethods;
  * }
  * </pre>
  *
- * <h4>More details</h4>
+ * <h1>More details</h1>
  *
  * See the method and constructor JavaDoc for more details.
  * <p>
@@ -539,7 +539,7 @@ public class Sql {
      *     resultSetConcurrency: CONCUR_READ_ONLY
      * )
      * </pre>
-     * 
+     *
      * @param args a Map contain further arguments
      * @return a new Sql instance with a connection
      * @throws SQLException           if a database access error occurs
@@ -852,7 +852,7 @@ public class Sql {
      * def fieldName = 'firstname'
      * def fieldOp = Sql.expand('like')
      * def fieldVal = '%a%'
-     * sql.query "select * from PERSON where ${Sql.expand(fieldName)} $fieldOp ${fieldVal}", { ResultSet rs ->
+     * sql.query "select * from PERSON where ${Sql.expand(fieldName)} $fieldOp ${fieldVal}", { ResultSet rs -&gt;
      *     while (rs.next()) println rs.getString('firstname')
      * }
      * // query will be 'select * from PERSON where firstname like ?'
@@ -923,11 +923,11 @@ public class Sql {
      * <p>
      * Example usages:
      * <pre>
-     * sql.query("select * from PERSON where firstname like 'S%'") { ResultSet rs ->
+     * sql.query("select * from PERSON where firstname like 'S%'") { ResultSet rs -&gt;
      *     while (rs.next()) println rs.getString('firstname') + ' ' + rs.getString(3)
      * }
      *
-     * sql.query("call get_people_places()") { ResultSet rs ->
+     * sql.query("call get_people_places()") { ResultSet rs -&gt;
      *     while (rs.next()) println rs.toRowResult().firstname
      * }
      * </pre>
@@ -962,7 +962,7 @@ public class Sql {
      * <p>
      * Example usage:
      * <pre>
-     * sql.query('select * from PERSON where lastname like ?', ['%a%']) { ResultSet rs ->
+     * sql.query('select * from PERSON where lastname like ?', ['%a%']) { ResultSet rs -&gt;
      *     while (rs.next()) println rs.getString('lastname')
      * }
      * </pre>
@@ -1037,7 +1037,7 @@ public class Sql {
      * Example usage:
      * <pre>
      * def location = 25
-     * sql.query "select * from PERSON where location_id < $location", { ResultSet rs ->
+     * sql.query "select * from PERSON where location_id &lt; $location", { ResultSet rs -&gt;
      *     while (rs.next()) println rs.getString('firstname')
      * }
      * </pre>
@@ -1063,7 +1063,7 @@ public class Sql {
      * <p>
      * Example usages:
      * <pre>
-     * sql.eachRow("select * from PERSON where firstname like 'S%'") { row ->
+     * sql.eachRow("select * from PERSON where firstname like 'S%'") { row -&gt;
      *    println "$row.firstname ${row[2]}}"
      * }
      *
@@ -1119,13 +1119,13 @@ public class Sql {
      * <p>
      * Example usage:
      * <pre>
-     * def printColNames = { meta ->
+     * def printColNames = { meta -&gt;
      *     (1..meta.columnCount).each {
      *         print meta.getColumnLabel(it).padRight(20)
      *     }
      *     println()
      * }
-     * def printRow = { row ->
+     * def printRow = { row -&gt;
      *     row.toRowResult().values().each{ print it.toString().padRight(20) }
      *     println()
      * }
@@ -1301,13 +1301,13 @@ public class Sql {
      * <p>
      * Example usage:
      * <pre>
-     * def printColNames = { meta ->
+     * def printColNames = { meta -&gt;
      *     (1..meta.columnCount).each {
      *         print meta.getColumnLabel(it).padRight(20)
      *     }
      *     println()
      * }
-     * def printRow = { row ->
+     * def printRow = { row -&gt;
      *     row.toRowResult().values().each{ print it.toString().padRight(20) }
      *     println()
      * }
@@ -1367,7 +1367,7 @@ public class Sql {
      * <p>
      * Example usage:
      * <pre>
-     * sql.eachRow("select * from PERSON where lastname like ?", ['%a%']) { row ->
+     * sql.eachRow("select * from PERSON where lastname like ?", ['%a%']) { row -&gt;
      *     println "${row[1]} $row.lastname"
      * }
      * </pre>
@@ -1482,17 +1482,17 @@ public class Sql {
      * Example usage:
      * <pre>
      * def location = 25
-     * def printColNames = { meta ->
+     * def printColNames = { meta -&gt;
      *     (1..meta.columnCount).each {
      *         print meta.getColumnLabel(it).padRight(20)
      *     }
      *     println()
      * }
-     * def printRow = { row ->
+     * def printRow = { row -&gt;
      *     row.toRowResult().values().each{ print it.toString().padRight(20) }
      *     println()
      * }
-     * sql.eachRow("select * from PERSON where location_id < $location", printColNames, printRow)
+     * sql.eachRow("select * from PERSON where location_id &lt; $location", printColNames, printRow)
      * </pre>
      * <p>
      * Resource handling is performed automatically where appropriate.
@@ -1577,7 +1577,7 @@ public class Sql {
      * Example usage:
      * <pre>
      * def location = 25
-     * sql.eachRow("select * from PERSON where location_id < $location") { row ->
+     * sql.eachRow("select * from PERSON where location_id &lt; $location") { row -&gt;
      *     println row.firstname
      * }
      * </pre>
@@ -1645,7 +1645,7 @@ public class Sql {
      * <p>
      * Example usage:
      * <pre>
-     * def printNumCols = { meta -> println "Found $meta.columnCount columns" }
+     * def printNumCols = { meta -&gt; println "Found $meta.columnCount columns" }
      * def ans = sql.rows("select * from PERSON", printNumCols)
      * println "Found ${ans.size()} rows"
      * </pre>
@@ -1843,7 +1843,7 @@ public class Sql {
      * <p>
      * Example usage:
      * <pre>
-     * def printNumCols = { meta -> println "Found $meta.columnCount columns" }
+     * def printNumCols = { meta -&gt; println "Found $meta.columnCount columns" }
      * def ans = sql.rows("select * from PERSON where lastname like ?", ['%a%'], printNumCols)
      * println "Found ${ans.size()} rows"
      * </pre>
@@ -1851,7 +1851,7 @@ public class Sql {
      * This method supports named and named ordinal parameters by supplying such
      * parameters in the <code>params</code> list. Here is an example:
      * <pre>
-     * def printNumCols = { meta -> println "Found $meta.columnCount columns" }
+     * def printNumCols = { meta -&gt; println "Found $meta.columnCount columns" }
      *
      * def mapParam = [foo: 'Smith']
      * def domainParam = new MyDomainClass(bar: 'John')
@@ -2015,7 +2015,7 @@ public class Sql {
      * Example usage:
      * <pre>
      * def location = 25
-     * def ans = sql.rows("select * from PERSON where location_id < $location")
+     * def ans = sql.rows("select * from PERSON where location_id &lt; $location")
      * println "Found ${ans.size()} rows"
      * </pre>
      * <p>
@@ -2039,8 +2039,8 @@ public class Sql {
      * Example usage:
      * <pre>
      * def location = 25
-     * def printNumCols = { meta -> println "Found $meta.columnCount columns" }
-     * def ans = sql.rows("select * from PERSON where location_id < $location", printNumCols)
+     * def printNumCols = { meta -&gt; println "Found $meta.columnCount columns" }
+     * def ans = sql.rows("select * from PERSON where location_id &lt; $location", printNumCols)
      * println "Found ${ans.size()} rows"
      * </pre>
      * <p>
@@ -2126,7 +2126,7 @@ public class Sql {
      * Example usage:
      * <pre>
      * def location = 25
-     * def ans = sql.firstRow("select * from PERSON where location_id < $location")
+     * def ans = sql.firstRow("select * from PERSON where location_id &lt; $location")
      * println ans.firstname
      * </pre>
      * <p>
@@ -2752,7 +2752,7 @@ public class Sql {
      * </pre>
      * we can now call the stored procedure as follows:
      * <pre>
-     * sql.call '{call Hemisphere(?, ?, ?)}', ['Guillaume', 'Laforge', Sql.VARCHAR], { dwells ->
+     * sql.call '{call Hemisphere(?, ?, ?)}', ['Guillaume', 'Laforge', Sql.VARCHAR], { dwells -&gt;
      *     println dwells
      * }
      * </pre>
@@ -2794,7 +2794,7 @@ public class Sql {
      * </pre>
      * and here is how you access the stored function for all databases:
      * <pre>
-     * sql.call("{? = call FullName(?)}", [Sql.VARCHAR, 'Sam']) { name ->
+     * sql.call("{? = call FullName(?)}", [Sql.VARCHAR, 'Sam']) { name -&gt;
      *     assert name == 'Sam Pullara'
      * }
      * </pre>
@@ -2860,7 +2860,7 @@ public class Sql {
      * <pre>
      * def first = 'Scott'
      * def last = 'Davis'
-     * sql.call "{call Hemisphere($first, $last, ${Sql.VARCHAR})}", { dwells ->
+     * sql.call "{call Hemisphere($first, $last, ${Sql.VARCHAR})}", { dwells -&gt;
      *     println dwells
      * }
      * </pre>
@@ -2870,7 +2870,7 @@ public class Sql {
      * Once created, it can be called like this:
      * <pre>
      * def first = 'Sam'
-     * sql.call("{$Sql.VARCHAR = call FullName($first)}") { name ->
+     * sql.call("{$Sql.VARCHAR = call FullName($first)}") { name -&gt;
      *     assert name == 'Sam Pullara'
      * }
      * </pre>
@@ -2982,7 +2982,7 @@ public class Sql {
      * configured using this closure. The statement being configured is passed into the closure
      * as its single argument, e.g.:
      * <pre>
-     * sql.withStatement{ stmt -> stmt.maxRows = 10 }
+     * sql.withStatement{ stmt -&gt; stmt.maxRows = 10 }
      * def firstTenRows = sql.rows("select * from table")
      * </pre>
      *
@@ -3101,7 +3101,7 @@ public class Sql {
      * <p>
      * Use it like this:
      * <pre>
-     * def updateCounts = sql.withBatch { stmt ->
+     * def updateCounts = sql.withBatch { stmt -&gt;
      *     stmt.addBatch("insert into TABLENAME ...")
      *     stmt.addBatch("insert into TABLENAME ...")
      *     stmt.addBatch("insert into TABLENAME ...")
@@ -3145,7 +3145,7 @@ public class Sql {
      * <p>
      * Use it like this for batchSize of 20:
      * <pre>
-     * def updateCounts = sql.withBatch(20) { stmt ->
+     * def updateCounts = sql.withBatch(20) { stmt -&gt;
      *     stmt.addBatch("insert into TABLENAME ...")
      *     stmt.addBatch("insert into TABLENAME ...")
      *     stmt.addBatch("insert into TABLENAME ...")
@@ -3209,7 +3209,7 @@ public class Sql {
      * <p>
      * An example:
      * <pre>
-     * def updateCounts = sql.withBatch('insert into TABLENAME(a, b, c) values (?, ?, ?)') { ps ->
+     * def updateCounts = sql.withBatch('insert into TABLENAME(a, b, c) values (?, ?, ?)') { ps -&gt;
      *     ps.addBatch([10, 12, 5])
      *     ps.addBatch([7, 3, 98])
      *     ps.addBatch(22, 67, 11)
@@ -3259,7 +3259,7 @@ public class Sql {
      * <p>
      * Below is an example using a batchSize of 20:
      * <pre>
-     * def updateCounts = sql.withBatch(20, 'insert into TABLENAME(a, b, c) values (?, ?, ?)') { ps ->
+     * def updateCounts = sql.withBatch(20, 'insert into TABLENAME(a, b, c) values (?, ?, ?)') { ps -&gt;
      *     ps.addBatch(10, 12, 5)      // varargs style
      *     ps.addBatch([7, 3, 98])     // list
      *     ps.addBatch([22, 67, 11])
@@ -3268,7 +3268,7 @@ public class Sql {
      * </pre>
      * Named parameters (into maps or domain objects) are also supported:
      * <pre>
-     * def updateCounts = sql.withBatch(20, 'insert into TABLENAME(a, b, c) values (:foo, :bar, :baz)') { ps ->
+     * def updateCounts = sql.withBatch(20, 'insert into TABLENAME(a, b, c) values (:foo, :bar, :baz)') { ps -&gt;
      *     ps.addBatch([foo:10, bar:12, baz:5])  // map
      *     ps.addBatch(foo:7, bar:3, baz:98)     // Groovy named args allow outer brackets to be dropped
      *     ...
@@ -3276,7 +3276,7 @@ public class Sql {
      * </pre>
      * Named ordinal parameters (into maps or domain objects) are also supported:
      * <pre>
-     * def updateCounts = sql.withBatch(20, 'insert into TABLENAME(a, b, c) values (?1.foo, ?2.bar, ?2.baz)') { ps ->
+     * def updateCounts = sql.withBatch(20, 'insert into TABLENAME(a, b, c) values (?1.foo, ?2.bar, ?2.baz)') { ps -&gt;
      *     ps.addBatch([[foo:22], [bar:67, baz:11]])  // list of maps or domain objects
      *     ps.addBatch([foo:10], [bar:12, baz:5])     // varargs allows outer brackets to be dropped
      *     ps.addBatch([foo:7], [bar:3, baz:98])
@@ -3284,7 +3284,7 @@ public class Sql {
      * }
      * // swap to batch size of 5 and illustrate simple and domain object cases ...
      * class Person { String first, last }
-     * def updateCounts2 = sql.withBatch(5, 'insert into PERSON(id, first, last) values (?1, ?2.first, ?2.last)') { ps ->
+     * def updateCounts2 = sql.withBatch(5, 'insert into PERSON(id, first, last) values (?1, ?2.first, ?2.last)') { ps -&gt;
      *     ps.addBatch(1, new Person(first:'Peter', last:'Pan'))
      *     ps.addBatch(2, new Person(first:'Snow', last:'White'))
      *     ...

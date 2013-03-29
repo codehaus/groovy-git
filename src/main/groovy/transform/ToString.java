@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * <p>
  * It allows you to write classes in this shortened form:
  * <pre>
- * {@code @ToString}
+ * @ToString
  * class Customer {
  *     String first, last
  *     int age
@@ -46,7 +46,7 @@ import java.lang.annotation.Target;
  * There are numerous options to customize the format of the generated output.
  * E.g. if you change the first annotation to:
  * <pre>
- * {@code @ToString(includeNames=true)}
+ * @ToString(includeNames=true)
  * </pre>
  * Then the output will be:
  * <pre>
@@ -54,7 +54,7 @@ import java.lang.annotation.Target;
  * </pre>
  * Or if you change the first annotation to:
  * <pre>
- * {@code @ToString(includeNames=true,includeFields=true,excludes="since,favItems")}
+ * @ToString(includeNames=true,includeFields=true,excludes="since,favItems")
  * </pre>
  * Then the output will be:
  * <pre>
@@ -63,10 +63,10 @@ import java.lang.annotation.Target;
  * If you have this example:
  * <pre>
  * import groovy.transform.ToString
- * {@code @ToString} class NamedThing {
+ * @ToString class NamedThing {
  *     String name
  * }
- * {@code @ToString}(includeNames=true,includeSuper=true)
+ * @ToString(includeNames=true,includeSuper=true)
  * class AgedThing extends NamedThing {
  *     int age
  * }
@@ -81,7 +81,7 @@ import java.lang.annotation.Target;
  * If you want to omit fields or properties referring to <tt>null</tt>, you can use the <tt>ignoreNulls</tt> flag:
  * <pre>
  * import groovy.transform.ToString
- * {@code @ToString(ignoreNulls = true)} class NamedThing {
+ * @ToString(ignoreNulls = true) class NamedThing {
  *     String name
  * }
  * println new NamedThing(name: null)
@@ -96,7 +96,7 @@ import java.lang.annotation.Target;
  * <pre>
  * package my.company
  * import groovy.transform.ToString
- * {@code @ToString(includePackage = false)} class NamedThing {
+ * @ToString(includePackage = false) class NamedThing {
  *     String name
  * }
  * println new NamedThing(name: "Lassie")
@@ -122,50 +122,68 @@ import java.lang.annotation.Target;
 @GroovyASTTransformationClass("org.codehaus.groovy.transform.ToStringASTTransformation")
 public @interface ToString {
     /**
-     * List of field and/or property names to exclude from generated toString.
-     * Must not be used if 'includes' is used. For convenience, a String with comma separated names
-     * can be used in addition to an array (using Groovy's literal list notation) of String values.
+     * List of field and/or property names to exclude from generated {@code toString}.
+     * Must not be used if 'includes' is used. For convenience, a {@code String} with comma separated names
+     * can be used in addition to an array (using Groovy's literal list notation) of {@code String} values.
+     *
+     * @return array of {@code String}s.
      */
     String[] excludes() default {};
 
     /**
-     * List of field and/or property names to include within the generated toString.
-     * Must not be used if 'excludes' is used. For convenience, a String with comma separated names
-     * can be used in addition to an array (using Groovy's literal list notation) of String values.
+     * List of field and/or property names to include within the generated {@code toString}.
+     * Must not be used if 'excludes' is used. For convenience, a {@code String} with comma separated names
+     * can be used in addition to an array (using Groovy's literal list notation) of {@code String} values.
+     *
+     * @return array of {@code String}s.
      */
     String[] includes() default {};
 
     /**
-     * Whether to include super in generated toString.
+     * Whether to include {@code super} in generated {@code toString}.
+     *
+     * @return whether to include {@code super} in generated {@code toString}.
      */
     boolean includeSuper() default false;
 
     /**
-     * Whether to include names of properties/fields in generated toString.
+     * Whether to include names of properties/fields in generated {@code toString}.
+     *
+     * @return whether to include names of properties/fields in generated {@code toString}.
      */
     boolean includeNames() default false;
 
     /**
-     * Include fields as well as properties in generated toString.
+     * Whether to include fields as well as properties in generated {@code toString}.
+     *
+     * @return whether to include fields as well as properties in generated {@code toString}.
      */
     boolean includeFields() default false;
 
     /**
-     * Don't display any fields or properties with value <tt>null</tt>.
+     * Whether to not display any fields or properties with value <tt>null</tt>.
+     *
+     * @return whether to not display any fields or properties with value <tt>null</tt>.
      */
     boolean ignoreNulls() default false;
 
     /**
      * Whether to include the fully-qualified class name (i.e. including
-     * the package) or just the simple class name in the generated toString.
+     * the package) or just the simple class name in the generated {@code toString}.
+     *
      * @since 2.0.6
+     *
+     * @return whether to include the fully-qualified class name.
      */
     boolean includePackage() default true;
 
     /**
-     * Whether to cache toString() calculations. You should only set this to true if
+     * Whether to cache {@code toString()} calculations. You should only set this to true if
      * you know the object is immutable (or technically mutable but never changed).
+     *
      * @since 2.1.0
+     *
+     * @return whether to cache {@code toString()} calculations.
      */
     boolean cache() default false;
 

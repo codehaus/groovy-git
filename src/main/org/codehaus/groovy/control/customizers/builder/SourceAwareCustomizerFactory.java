@@ -60,7 +60,7 @@ import java.util.Map;
  *     }
  *
  *     // apply CompileStatic AST annotation on files that do not contain a class named 'Baz'
- *     builder.source(unitValidator: { unit -> !unit.AST.classes.any { it.name == 'Baz' } }) {
+ *     builder.source(unitValidator: { unit -&gt; !unit.AST.classes.any { it.name == 'Baz' } }) {
  *         ast(CompileStatic)
  *     }
  * </code></pre>

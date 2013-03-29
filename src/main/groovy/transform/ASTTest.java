@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2009 the original author or authors.
+ * Copyright 2003-2009, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,11 +58,15 @@ ElementType.LOCAL_VARIABLE, ElementType.PACKAGE, ElementType.PARAMETER})
 public @interface ASTTest {
     /**
      * The compile phase after which the test code should run.
+     *
+     * @return the {@code CompilePhase}.
      */
     CompilePhase phase() default CompilePhase.SEMANTIC_ANALYSIS;
 
     /**
      * A closure which is executed against the annotated node after the specified phase has completed.
+     *
+     * @return the {@code Class}
      */
     Class value();
 }

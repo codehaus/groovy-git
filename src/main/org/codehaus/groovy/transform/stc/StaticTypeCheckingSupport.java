@@ -151,6 +151,10 @@ public abstract class StaticTypeCheckingSupport {
 
     /**
      * @deprecated Use {@link #findDGMMethodsForClassNode(ClassLoader,ClassNode,String)} instead
+     *
+     * @param clazz the class to work with
+     * @param name the name to use
+     * @return the set of method nodes
      */
     @Deprecated
     protected static Set<MethodNode> findDGMMethodsForClassNode(ClassNode clazz, String name) {
@@ -166,6 +170,11 @@ public abstract class StaticTypeCheckingSupport {
 
     /**
      * @deprecated Use {@link #findDGMMethodsForClassNode(ClassLoader, ClassNode, String, TreeSet)} instead
+     *
+     * @param clazz the class to work with
+     * @param name the name to use
+     * @param accumulator set of methods
+     * @return the set of method nodes
      */
     @Deprecated
     protected static void findDGMMethodsForClassNode(ClassNode clazz, String name, TreeSet<MethodNode> accumulator) {
@@ -203,7 +212,7 @@ public abstract class StaticTypeCheckingSupport {
      * Checks that arguments and parameter types match.
      * @param params method parameters
      * @param args type arguments
-     * @return -1 if arguments do not match, 0 if arguments are of the exact type and >0 when one or more argument is
+     * @return -1 if arguments do not match, 0 if arguments are of the exact type and &gt; 0 when one or more argument is
      * not of the exact type but still match
      */
     public static int allParametersAndArgumentsMatch(Parameter[] params, ClassNode[] args) {
@@ -834,6 +843,11 @@ public abstract class StaticTypeCheckingSupport {
 
     /**
      * @deprecated Use {@link #findDGMMethodsByNameAndArguments(ClassLoader, org.codehaus.groovy.ast.ClassNode, String, org.codehaus.groovy.ast.ClassNode[], java.util.List)} instead
+     *
+     * @param receiver the receiver node
+     * @param name the method name
+     * @param args the method arguments
+     * @return the list of method nodes
      */
     @Deprecated
     public static List<MethodNode> findDGMMethodsByNameAndArguments(final ClassNode receiver, final String name, final ClassNode[] args) {
@@ -846,6 +860,12 @@ public abstract class StaticTypeCheckingSupport {
 
     /**
      * @deprecated Use {@link #findDGMMethodsByNameAndArguments(ClassLoader, org.codehaus.groovy.ast.ClassNode, String, org.codehaus.groovy.ast.ClassNode[], List)} instead
+     *
+     * @param receiver the receiver node
+     * @param name the method name
+     * @param args the method arguments
+     * @param methods a list of method nodes
+     * @return the list of method nodes
      */
     @Deprecated
     public static List<MethodNode> findDGMMethodsByNameAndArguments(final ClassNode receiver, final String name, final ClassNode[] args, final List<MethodNode> methods) {
@@ -951,7 +971,7 @@ public abstract class StaticTypeCheckingSupport {
     /**
      * Given a list of candidate methods, returns the one which best matches the argument types
      *
-     * @param receiver
+     * @param receiver the receiving {@code ClassNode}.
      * @param methods candidate methods
      * @param args argument types
      * @return the list of methods which best matches the argument types. It is still possible that multiple
@@ -1085,7 +1105,7 @@ public abstract class StaticTypeCheckingSupport {
                             }
                         }
                     }
-                }                
+                }
             }
         }
         if (toBeRemoved.isEmpty()) return list;
@@ -1093,7 +1113,7 @@ public abstract class StaticTypeCheckingSupport {
         result.removeAll(toBeRemoved);
         return result;
     }
-    
+
     /**
      * Given a receiver and a method node, parameterize the method arguments using
      * available generic type information.
@@ -1173,7 +1193,7 @@ public abstract class StaticTypeCheckingSupport {
      * specifically by the Groovy compiler.
      */
     private static class ObjectArrayStaticTypesHelper {
-        public static <T> T getAt(T[] arr, int index) { return null;} 
+        public static <T> T getAt(T[] arr, int index) { return null;}
         public static <T,U extends T> void putAt(T[] arr, int index, U object) { }
     }
 
@@ -1285,6 +1305,7 @@ public abstract class StaticTypeCheckingSupport {
     }
 
     /**
+     * @param node the class node to check
      * @return true if the class node is either a GString or the LUB of String and GString.
      */
     public static boolean isGStringOrGStringStringLUB(ClassNode node) {

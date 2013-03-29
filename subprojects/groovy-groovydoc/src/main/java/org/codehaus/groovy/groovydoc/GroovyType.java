@@ -32,27 +32,35 @@ public interface GroovyType {
 
     /**
      * The qualified name of this type excluding any dimension information.
-     * For example, a two dimensional array of String returns "<code>java.lang.String</code>".
+     * For example, a two dimensional array of {@code String} returns "{@code java.lang.String}".
+     *
+     * @return The qualified name of this type excluding any dimension information.
      */
     String qualifiedTypeName();
 
     /**
      * The unqualified name of this type excluding any dimension or nesting information.
-     * For example, the class <code>Outer.Inner</code> returns "<code>Inner</code>".
+     * For example, the class {@code Outer.Inner} returns "{@code Inner}".
+     *
+     * @return The unqualified name of this type excluding any dimension or nesting information.
      */
     String simpleTypeName();
 
     /**
      * The unqualified name of this type excluding any dimension information.
-     * For example, a two dimensional array of String returns "<code>String</code>".
+     * For example, a two dimensional array of {@code String} returns "{@code String}".
+     *
+     * @return The unqualified name of this type excluding any dimension information.
      */
     String typeName();
 
     /**
      * The qualified name including any dimension information.
      * For example, a two dimensional array of String returns
-     * "<code>java.lang.String[][]</code>", and the parameterized type
-     * <code>List&lt;Integer&gt;</code> returns "<code>java.util.List&lt;java.lang.Integer&gt;</code>".
+     * "{@code java.lang.String[][]}", and the parameterized type
+     * {@code List&lt;Integer&gt;} returns "{@code java.util.List&lt;java.lang.Integer&gt;}".
+     *
+     * @return The qualified name including any dimension information.
      */
     String toString();
 }

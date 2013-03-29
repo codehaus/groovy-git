@@ -31,7 +31,7 @@ import java.util.*;
  * JSON slurper which parses text or reader content into a data structure of lists and maps.
  * <p>
  * Example usage:
- * <code><pre>
+ * <pre>
  * def slurper = new JsonSlurper()
  * def result = slurper.parseText('{"person":{"name":"Guillaume","age":33,"pets":["dog","cat"]}}')
  *
@@ -40,7 +40,7 @@ import java.util.*;
  * assert result.person.pets.size() == 2
  * assert result.person.pets[0] == "dog"
  * assert result.person.pets[1] == "cat"
- * </pre></code>
+ * </pre>
  *
  * @author Guillaume Laforge
  * @since 1.8.0

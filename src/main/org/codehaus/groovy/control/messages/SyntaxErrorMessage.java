@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,11 @@ import org.codehaus.groovy.syntax.SyntaxException;
  * A class for error messages produced by the parser system.
  *
  * @author <a href="mailto:cpoirier@dreaming.org">Chris Poirier</a>
- * @version $Id$
  */
-
 public class SyntaxErrorMessage extends Message {
     protected SyntaxException cause;
     protected SourceUnit source;
-    
+
     public SyntaxErrorMessage(SyntaxException cause, SourceUnit source) {
         this.cause = cause;
         this.source = source;
@@ -40,8 +38,9 @@ public class SyntaxErrorMessage extends Message {
 
     /**
      * Returns the underlying SyntaxException.
+     *
+     * @return the cause.
      */
-
     public SyntaxException getCause() {
         return this.cause;
     }
@@ -49,7 +48,6 @@ public class SyntaxErrorMessage extends Message {
     /**
      * Writes out a nicely formatted summary of the syntax error.
      */
-
     public void write(PrintWriter output, Janitor janitor) {
         String name = source.getName();
         int line = getCause().getStartLine();

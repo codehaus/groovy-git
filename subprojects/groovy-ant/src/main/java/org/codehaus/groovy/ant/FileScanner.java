@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 the original author or authors.
+ * Copyright 2003-2008, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 
-/** 
+/**
  * <p><code>FileScanner</code> is a bean which allows the iteration
  * over a number of files from a collection of FileSet instances.
  *
@@ -38,11 +38,11 @@ public class FileScanner extends Task {
 
     public FileScanner() {
     }
-    
+
     public FileScanner(final Project project) {
         setProject(project);
     }
-    
+
     public Iterator iterator() {
         return new FileIterator(getProject(), filesets.iterator());
     }
@@ -67,6 +67,8 @@ public class FileScanner extends Task {
 
     /**
      * Adds a set of files (nested fileset attribute).
+     *
+     * @param set the {@code FileSet} to add.
      */
     public void addFileset(FileSet set) {
         filesets.add(set);

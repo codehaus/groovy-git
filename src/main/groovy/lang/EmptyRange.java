@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 import java.util.*;
 
 /**
- * Constructing Ranges like 0..<0
+ * Constructing Ranges like 0..&lt;0
  * @author Dierk Koenig
  * @author Edwin Tellman
  */
 public class EmptyRange extends AbstractList implements Range {
-    
+
     /**
      * The value at which the range originates (may be <code>null</code>).
      */
@@ -34,7 +34,7 @@ public class EmptyRange extends AbstractList implements Range {
 
     /**
      * Creates a new {@link EmptyRange}.
-     * 
+     *
      * @param at the value at which the range starts (may be <code>null</code>).
      */
     public EmptyRange(Comparable at) {
@@ -57,7 +57,7 @@ public class EmptyRange extends AbstractList implements Range {
 
     /**
      * Never true for an empty range.
-     * 
+     *
      * @return <code>false</code>
      */
     public boolean isReverse() {
@@ -84,14 +84,14 @@ public class EmptyRange extends AbstractList implements Range {
      * {@inheritDoc}
      */
     public String toString() {
-        return (null == at) 
+        return (null == at)
             ? "null..<null"
             : at.toString() + "..<" + at.toString();
     }
 
     /**
      * Always 0 for an empty range.
-     * 
+     *
      * @return 0
      */
     public int size() {
@@ -100,7 +100,7 @@ public class EmptyRange extends AbstractList implements Range {
 
     /**
      * Always throws <code>IndexOutOfBoundsException</code> for an empty range.
-     * 
+     *
      * @throws IndexOutOfBoundsException always
      */
     public Object get(int index) {
@@ -133,7 +133,7 @@ public class EmptyRange extends AbstractList implements Range {
     public boolean addAll(Collection c) {
         throw new UnsupportedOperationException("cannot add to Empty Ranges");
     }
-    
+
     /**
      * Always throws <code>UnsupportedOperationException</code> for an empty range.
      *

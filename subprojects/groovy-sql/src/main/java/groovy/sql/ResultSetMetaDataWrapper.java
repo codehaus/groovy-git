@@ -27,7 +27,7 @@ import org.codehaus.groovy.runtime.InvokerHelper;
  * This class defines a wrapper for accessing a specific column in <code>ResultSetMetaData</code>.
  * This allows iteration over columns using idiomatic Groovy, e.g.:
  * <pre>
- * meta.each {col ->
+ * meta.each {col -&gt;
  *   println col.columnName
  * }
  * </pre>

@@ -42,7 +42,7 @@ import javax.servlet.http.HttpServletResponse;
  * It delegates work to a <code>groovy.text.TemplateEngine</code> implementation
  * processing HTTP requests.
  * <p>
- * <h4>Usage</h4>
+ * <h1>Usage</h1>
  * <p>
  * <code>helloworld.html</code> is a headless HTML-like template
  * <pre><code>
@@ -70,7 +70,7 @@ import javax.servlet.http.HttpServletResponse;
  * &lt;/web-app&gt;
  * </code></pre>
  * <p>
- * <h4>Template engine configuration</h4>
+ * <h1>Template engine configuration</h1>
  * <p>
  * By default, the TemplateServer uses the {@link groovy.text.SimpleTemplateEngine}
  * which interprets JSP-like templates. The init parameter <code>template.engine</code>
@@ -82,9 +82,9 @@ import javax.servlet.http.HttpServletResponse;
  *   template.engine = groovy.text.XmlTemplateEngine
  * </pre>
  * <p>
- * <h3>Servlet Init Parameters</h3>
+ * <h1>Servlet Init Parameters</h1>
  * <p>
- * <h4>Logging and extra-output options</h4>
+ * <h2>Logging and extra-output options</h2>
  * <p>
  * This implementation provides a verbosity flag switching log statements.
  * The servlet init parameter name is:
@@ -92,7 +92,7 @@ import javax.servlet.http.HttpServletResponse;
  *   generated.by = true(default) | false
  * </pre>
  * <p>
- * <h4>Groovy Source Encoding Parameter</h4>
+ * <h2>Groovy Source Encoding Parameter</h2>
  * <p>
  * The following servlet init parameter name can be used to specify the encoding TemplateServlet will use
  * to read the template groovy source files:
@@ -216,7 +216,7 @@ public class TemplateServlet extends AbstractHttpServlet {
         if (verbose) {
             log("Looking for cached template by key \"" + key + "\"");
         }
-        
+
         TemplateCacheEntry entry = (TemplateCacheEntry) cache.get(key);
         if (entry != null) {
             if (entry.validate(file)) {
@@ -429,7 +429,7 @@ public class TemplateServlet extends AbstractHttpServlet {
         Template template;
         long getMillis;
         String name;
-        
+
         File file = super.getScriptUriAsFile(request);
         if (file != null) {
             name = file.getName();

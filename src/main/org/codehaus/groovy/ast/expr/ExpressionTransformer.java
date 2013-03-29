@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,16 @@ package org.codehaus.groovy.ast.expr;
 
 /**
  * Provides a way to transform expressions
- * 
+ *
  * @author <a href="mailto:james@coredevelopers.net">James Strachan</a>
- * @version $Revision$
  */
 public interface ExpressionTransformer {
-    
-    /** 
-     * Transforms the given expression into another expression
+
+    /**
+     * Transforms the given expression into another expression.
+     *
+     * @param expression the {@code Expression} to transform.
+     * @return the transformed {@code Expression}.
      */
     Expression transform(Expression expression);
 }

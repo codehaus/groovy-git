@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2009 the original author or authors.
+ * Copyright 2003-2009, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.codehaus.groovy.syntax.Types;
 import java.util.*;
 
 /**
- * Some expressions use symbols as aliases to method calls (<<, +=, ...). In static compilation,
+ * Some expressions use symbols as aliases to method calls (&lt;&lt;, +=, ...). In static compilation,
  * if such a method call is found, we transform the original binary expression into a method
  * call expression so that the call gets statically compiled.
  *
@@ -111,7 +111,7 @@ public class StaticCompilationTransformer extends ClassCodeExpressionTransformer
     final Expression superTransform(Expression expr) {
         return super.transform(expr);
     }
-    
+
     @Override
     public void visitClass(final ClassNode node) {
         ClassNode prec = classNode;

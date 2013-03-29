@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2012 the original author or authors.
+ * Copyright 2003-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
- * A registry of MetaClass instances which caches introspection &
+ * A registry of MetaClass instances which caches introspection &amp;
  * reflection information and allows methods to be dynamically added to
  * existing classes at runtime
  *
@@ -82,7 +82,7 @@ public class MetaClassRegistryImpl implements MetaClassRegistry{
     public MetaClassRegistryImpl(boolean useAccessible) {
         this(LOAD_DEFAULT, useAccessible);
     }
-    
+
     public MetaClassRegistryImpl(final int loadDefault, final boolean useAccessible) {
         this.useAccessible = useAccessible;
 
@@ -118,7 +118,7 @@ public class MetaClassRegistryImpl implements MetaClassRegistry{
         final MetaClass emcMetaClass = metaClassCreationHandle.create(ExpandoMetaClass.class, this);
         emcMetaClass.initialize();
         ClassInfo.getClassInfo(ExpandoMetaClass.class).setStrongMetaClass(emcMetaClass);
-        
+
 
         addNonRemovableMetaClassRegistryChangeEventListener(new MetaClassRegistryChangeEventListener(){
             public void updateConstantMetaClass(MetaClassRegistryChangeEvent cmcu) {
@@ -173,7 +173,7 @@ public class MetaClassRegistryImpl implements MetaClassRegistry{
                throw new GroovyRuntimeException("Could not instantiate custom Metaclass creation handle: "+ e, e);
            }
     }
-    
+
     private void registerMethods(final Class theClass, final boolean useMethodWrapper, final boolean useInstanceMethods, Map<CachedClass, List<MetaMethod>> map) {
         if (useMethodWrapper) {
             // Here we instantiate objects representing MetaMethods for DGM methods.
@@ -266,7 +266,7 @@ public class MetaClassRegistryImpl implements MetaClassRegistry{
      */
     private void setMetaClass(Class theClass, MetaClass oldMc, MetaClass newMc) {
         final ClassInfo info = ClassInfo.getClassInfo(theClass);
-        
+
         MetaClass mc = null;
         info.lock();
         try {
@@ -279,11 +279,11 @@ public class MetaClassRegistryImpl implements MetaClassRegistry{
             fireConstantMetaClassUpdate(null, theClass, mc, newMc);
         }
     }
-    
+
     public void removeMetaClass(Class theClass) {
         setMetaClass(theClass, null, null);
     }
-    
+
     /**
      * Registers a new MetaClass in the registry to customize the type
      *
@@ -307,7 +307,7 @@ public class MetaClassRegistryImpl implements MetaClassRegistry{
         finally {
             info.unlock();
         }
-        
+
         fireConstantMetaClassUpdate(obj, theClass, oldMC, theMetaClass);
     }
 
@@ -318,16 +318,16 @@ public class MetaClassRegistryImpl implements MetaClassRegistry{
 
     // the following is experimental code, not intended for stable use yet
     private volatile MetaClassCreationHandle metaClassCreationHandle = new MetaClassCreationHandle();
-    
+
     /**
      * Gets a handle internally used to create MetaClass implementations
      * WARNING: experimental code, likely to change soon
      * @return the handle
-     */    
+     */
     public MetaClassCreationHandle getMetaClassCreationHandler() {
         return metaClassCreationHandle;
     }
-    
+
     /**
      * Sets a handle internally used to create MetaClass implementations.
      * When replacing the handle with a custom version, you should
@@ -341,7 +341,7 @@ public class MetaClassRegistryImpl implements MetaClassRegistry{
         ClassInfo.clearModifiedExpandos();
         handle.setDisableCustomMetaClassLookup(metaClassCreationHandle.isDisableCustomMetaClassLookup());
         metaClassCreationHandle = handle;
-    }    
+    }
 
     /**
      * Adds a listener for constant meta classes.
@@ -352,7 +352,7 @@ public class MetaClassRegistryImpl implements MetaClassRegistry{
             changeListenerList.add(listener);
         }
     }
-    
+
 
     /**
      * Adds a listener for constant meta classes. This listener cannot be removed!
@@ -403,9 +403,9 @@ public class MetaClassRegistryImpl implements MetaClassRegistry{
             return (MetaClassRegistryChangeEventListener[]) ret.toArray(new MetaClassRegistryChangeEventListener[ret.size()]);
         }
     }
-    
+
     /**
-     * Singleton of MetaClassRegistry. 
+     * Singleton of MetaClassRegistry.
      *
      * @param includeExtension
      * @return the registry
@@ -431,24 +431,24 @@ public class MetaClassRegistryImpl implements MetaClassRegistry{
     public FastArray getStaticMethods() {
         return staticMethods;
     }
-    
+
     /**
      * Returns an iterator to iterate over all constant meta classes.
      * This iterator can be seen as making a snapshot of the current state
      * of the registry. The snapshot will include all meta classes that has
-     * been used unless they are already collected. Collected meta classes 
+     * been used unless they are already collected. Collected meta classes
      * will be skipped automatically, so you can expect that each element
      * of the iteration is not null. Calling this method is thread safe, the
      * usage of the iterator is not.
-     *  
+     *
      * @return the iterator.
-     */    
+     */
     public Iterator iterator() {
         final MetaClass[] refs;
         synchronized (metaClassInfo) {
             refs = (MetaClass[]) metaClassInfo.toArray(new MetaClass[0]);
         }
-        
+
         return new Iterator() {
             // index in the ref array
             private int index = 0;
@@ -471,19 +471,19 @@ public class MetaClassRegistryImpl implements MetaClassRegistry{
                 }
                 return hasNext;
             }
-            
+
             private void ensureNext() {
-                // we ensure that hasNext has been called before 
+                // we ensure that hasNext has been called before
                 // next is called
                 hasNext();
                 hasNextCalled = false;
             }
-            
+
             public Object next() {
                 ensureNext();
                 return currentMeta;
             }
-            
+
             public void remove() {
                 ensureNext();
                 setMetaClass(currentMeta.getTheClass(), currentMeta, null);

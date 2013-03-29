@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import org.codehaus.groovy.runtime.MetaClassHelper;
 
 /**
  * Represents a property on a bean which may have a getter and/or a setter
- * 
+ *
  * @author <a href="mailto:james@coredevelopers.net">James Strachan</a>
  * @version $Revision$
  */
@@ -38,13 +38,13 @@ public abstract class MetaProperty {
 
     /**
      * @return the property of the given object
-     * @throws Exception if the property could not be evaluated
+     * @throws RuntimeException if the property could not be evaluated
      */
     public abstract Object getProperty(Object object);
 
     /**
      * Sets the property on the given object to the new value
-     * 
+     *
      * @param object on which to set the property
      * @param newValue the new value of the property
      * @throws RuntimeException if the property could not be set
@@ -61,7 +61,7 @@ public abstract class MetaProperty {
     public Class getType() {
         return type;
     }
-    
+
     public int getModifiers() {
         return Modifier.PUBLIC;
     }

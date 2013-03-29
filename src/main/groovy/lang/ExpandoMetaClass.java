@@ -60,25 +60,25 @@ import org.codehaus.groovy.util.FastArray;
  * Some examples of usage:
  * <pre>
  * // defines or replaces instance method:
- * metaClass.myMethod = { args -> }
+ * metaClass.myMethod = { args -&gt; }
  *
  * // defines a new instance method
- * metaClass.myMethod << { args -> }
+ * metaClass.myMethod &lt;&lt; { args -&gt; }
  *
  * // creates multiple overloaded methods of the same name
- * metaClass.myMethod << { String s -> } << { Integer i -> }
+ * metaClass.myMethod &lt;&lt; { String s -&gt; } &lt;&lt; { Integer i -&gt; }
  *
  * // defines or replaces a static method with the 'static' qualifier
- * metaClass.'static'.myMethod = { args ->  }
+ * metaClass.'static'.myMethod = { args -&gt;  }
  *
  * // defines a new static method with the 'static' qualifier
- * metaClass.'static'.myMethod << { args ->  }
+ * metaClass.'static'.myMethod &lt;&lt; { args -&gt;  }
  *
  * // defines a new constructor
- * metaClass.constructor << { String arg -> }
+ * metaClass.constructor &lt;&lt; { String arg -&gt; }
  *
  * // defines or replaces a constructor
- * metaClass.constructor = { String arg -> }
+ * metaClass.constructor = { String arg -&gt; }
  *
  * // defines a new property with an initial value of "blah"
  * metaClass.myProperty = "blah"
@@ -86,14 +86,14 @@ import org.codehaus.groovy.util.FastArray;
  * <p>
  * ExpandoMetaClass also supports a DSL/builder like notation to combine multiple definitions together. So instead of this:
  * <pre>
- * Number.metaClass.multiply = { Amount amount -> amount.times(delegate) }
- * Number.metaClass.div =      { Amount amount -> amount.inverse().times(delegate) }
+ * Number.metaClass.multiply = { Amount amount -&gt; amount.times(delegate) }
+ * Number.metaClass.div =      { Amount amount -&gt; amount.inverse().times(delegate) }
  * </pre>
  * You can also now do this:
  * <pre>
  * Number.metaClass {
- *     multiply { Amount amount -> amount.times(delegate) }
- *     div      { Amount amount -> amount.inverse().times(delegate) }
+ *     multiply { Amount amount -&gt; amount.times(delegate) }
+ *     div      { Amount amount -&gt; amount.inverse().times(delegate) }
  * }
  * </pre>
  * <p>
@@ -134,12 +134,12 @@ import org.codehaus.groovy.util.FastArray;
  * As another example, consider the following class definitions:
  * <pre>
  * class Student {
- *     List<String> schedule = []
+ *     List&lt;String&gt; schedule = []
  *     def addLecture(String lecture) { schedule << lecture }
  * }
  *
  * class Worker {
- *     List<String> schedule = []
+ *     List&lt;String&gt; schedule = []
  *     def addMeeting(String meeting) { schedule << meeting }
  * }
  * </pre>
@@ -195,16 +195,16 @@ import org.codehaus.groovy.util.FastArray;
  * ndq.metaClass {
  *     mixin ArrayDeque
  *     mixin HashSet
- *     leftShift = { Object o ->
+ *     leftShift = { Object o -&gt;
  *         if (!mixedIn[Set].contains(o)) {
  *             mixedIn[Queue].push(o)
  *             mixedIn[Set].add(o)
  *         }
  *     }
  * }
- * ndq << 1
- * ndq << 2
- * ndq << 1
+ * ndq &lt;&lt; 1
+ * ndq &lt;&lt; 2
+ * ndq &lt;&lt; 1
  * assert ndq.size() == 2
  * </pre>
  * As a final example, we sometimes need to pass such mixed in classes or objects
@@ -229,8 +229,8 @@ import org.codehaus.groovy.util.FastArray;
  * o.metaClass.mixin CustomComparator, CustomCloseable
  * def items = ['a', 'bbb', 'cc']
  * sort(items, o as Comparator)
- * println items                // => [a, cc, bbb]
- * closeQuietly(o as Closeable) // => Lights out - I am closing
+ * println items                // =&gt; [a, cc, bbb]
+ * closeQuietly(o as Closeable) // =&gt; Lights out - I am closing
  * </pre>
  * <p>
  * <b>Further details</b>
@@ -275,10 +275,10 @@ public class ExpandoMetaClass extends MetaClassImpl implements GroovyObject {
     private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
     private final Lock readLock = rwl.readLock();
     private final Lock writeLock = rwl.writeLock();
-    
+
     final private boolean allowChangesAfterInit;
     public boolean inRegistry;
-    
+
     private final Set<MetaMethod> inheritedMetaMethods = new HashSet<MetaMethod>();
     private final Map<String, MetaProperty> beanPropertyCache = new ConcurrentHashMap<String, MetaProperty>();
     private final Map<String, MetaProperty> staticBeanPropertyCache = new ConcurrentHashMap<String, MetaProperty>();
@@ -296,14 +296,14 @@ public class ExpandoMetaClass extends MetaClassImpl implements GroovyObject {
     public ExpandoMetaClass(Class theClass, boolean register, boolean allowChangesAfterInit, MetaMethod[] add) {
         this(GroovySystem.getMetaClassRegistry(), theClass, register, allowChangesAfterInit, add);
     }
-    
+
     public ExpandoMetaClass(MetaClassRegistry registry, Class theClass, boolean register, boolean allowChangesAfterInit, MetaMethod[] add) {
         super(registry, theClass, add);
         this.myMetaClass = InvokerHelper.getMetaClass(getClass());
         this.inRegistry = register;
         this.allowChangesAfterInit = allowChangesAfterInit;
     }
-    
+
     /**
      * Constructs a new ExpandoMetaClass instance for the given class
      *
@@ -554,11 +554,11 @@ public class ExpandoMetaClass extends MetaClassImpl implements GroovyObject {
     }
 
     /**
-     * Instances of this class are returned when using the << left shift operator.
+     * Instances of this class are returned when using the &lt;&lt; left shift operator.
      * <p>
      * Example:
      * <p>
-     * metaClass.myMethod << { String args -> }
+     * metaClass.myMethod &lt;&lt; { String args -&gt; }
      * <p>
      * This allows callbacks to the ExpandoMetaClass for registering appending methods
      *
@@ -741,7 +741,7 @@ public class ExpandoMetaClass extends MetaClassImpl implements GroovyObject {
         if (metaMethod != null) {
             // we have to use doMethodInvoke here instead of simply invoke,
             // because getMetaMethod may provide a method that can not be called
-            // without further argument transformation, which is done only in 
+            // without further argument transformation, which is done only in
             // doMethodInvoke
             return metaMethod.doMethodInvoke(this, argsArr);
         }
@@ -822,7 +822,7 @@ public class ExpandoMetaClass extends MetaClassImpl implements GroovyObject {
             readLock.unlock();
         }
     }
-    
+
     protected void checkInitalised() {
         try {
             readLock.lock();
@@ -1311,7 +1311,7 @@ public class ExpandoMetaClass extends MetaClassImpl implements GroovyObject {
             return new PogoMetaClassSite(site, this);
         return super.createPogoCallCurrentSite(site, sender, args);
     }
-    
+
     @Override
     public MetaMethod retrieveConstructor(Object[] args) {
         Class[] params = MetaClassHelper.convertToTypeArray(args);

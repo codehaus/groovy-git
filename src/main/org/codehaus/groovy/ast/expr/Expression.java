@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,17 +25,17 @@ import org.codehaus.groovy.GroovyBugError;
 
 /**
  * Represents a base class for expressions which evaluate as an object
- * 
+ *
  * @author <a href="mailto:james@coredevelopers.net">James Strachan</a>
- * @version $Revision$
  */
 public abstract class Expression extends AnnotatedNode {
 
     private ClassNode type=ClassHelper.DYNAMIC_TYPE;
-    
+
     /**
-     * Return a copy of the expression calling the transformer on any nested expressions 
+     * Return a copy of the expression calling the transformer on any nested expressions
      * @param transformer
+     * @return the transformed expression
      */
     public abstract Expression transformExpression(ExpressionTransformer transformer);
 
@@ -54,6 +54,9 @@ public abstract class Expression extends AnnotatedNode {
     /**
      * Transforms the list of expressions, and checks that all transformed expressions have the given type.
      *
+     * @param expressions the list of expressions
+     * @param transformer the expression transformer
+     * @param transformedType the type of the transformed expression
      * @return a new list of transformed expressions
      */
     protected <T extends Expression> List<T> transformExpressions(List<? extends Expression> expressions,
@@ -68,11 +71,11 @@ public abstract class Expression extends AnnotatedNode {
         }
         return list;
     }
-    
+
     public ClassNode getType() {
         return type;
     }
-    
+
     public void setType(ClassNode t) {
         type=t;
     }

@@ -76,11 +76,15 @@ public @interface AutoExternalize {
      * Comma separated list of property names to exclude from externalizing.
      * For convenience, a String with comma separated names
      * can be used in addition to an array (using Groovy's literal list notation) of String values.
+     *
+     * @return an array of {@code String}s.
      */
     String[] excludes() default {};
 
     /**
      * Include fields as well as properties when externalizing.
+     *
+     * @return whether fields are included.
      */
     boolean includeFields() default false;
 }

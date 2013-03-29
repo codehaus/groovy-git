@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 the original author or authors.
+ * Copyright 2003-2008, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * A default table model made up of PropertyModels on a Value model.
- * 
+ *
  * @author <a href="mailto:james@coredevelopers.net">James Strachan</a>
  * @version $Revision$
  */
@@ -40,12 +40,12 @@ public class DefaultTableModel extends AbstractTableModel {
     public DefaultTableModel(ValueModel rowsModel) {
         this(rowsModel, new ValueHolder());
     }
-    
+
     public DefaultTableModel(ValueModel rowsModel, ValueModel rowModel) {
         this.rowModel = rowModel;
         this.rowsModel = rowsModel;
     }
-    
+
     /**
      * @return the column definitions.
      */
@@ -56,28 +56,42 @@ public class DefaultTableModel extends AbstractTableModel {
     public TableColumnModel getColumnModel() {
         return columnModel;
     }
-    
+
     /**
      * Adds a property model column to the table
+     *
+     * @param headerValue
+     * @param property
+     * @param type
      */
     public DefaultTableColumn addPropertyColumn(Object headerValue, String property, Class type) {
         return addColumn(headerValue, property, new PropertyModel(rowModel, property, type));
     }
-    
+
     /**
      * Adds a property model column to the table
+     *
+     * @param headerValue
+     * @param property
+     * @param type
+     * @param editable
      */
     public DefaultTableColumn addPropertyColumn(Object headerValue, String property, Class type, boolean editable) {
         return addColumn(headerValue, property, new PropertyModel(rowModel, property, type, editable));
     }
-    
+
     /**
      * Adds a closure based column to the table
+     *
+     * @param headerValue
+     * @param readClosure
+     * @param writeClosure
+     * @param type
      */
     public DefaultTableColumn addClosureColumn(Object headerValue, Closure readClosure, Closure writeClosure, Class type) {
         return addColumn(headerValue, new ClosureModel(rowModel, readClosure, writeClosure, type));
     }
-    
+
     public DefaultTableColumn addColumn(Object headerValue, ValueModel columnValueModel) {
         return addColumn(headerValue, headerValue, columnValueModel);
     }
@@ -87,22 +101,26 @@ public class DefaultTableModel extends AbstractTableModel {
         addColumn(answer);
         return answer;
     }
-    
+
     /**
      * Adds a new column definition to the table
+     *
+     * @param column the {@code DefaultTableColumn}.
      */
     public void addColumn(DefaultTableColumn column) {
         column.setModelIndex(columnModel.getColumnCount());
         columnModel.addColumn(column);
     }
-    
+
     /**
      * Removes a column definition from the table
+     *
+     * @param column the {@code DefaultTableColumn}.
      */
     public void removeColumn(DefaultTableColumn column) {
         columnModel.removeColumn(column);
     }
-    
+
     public int getRowCount() {
         return getRows().size();
     }
@@ -110,7 +128,7 @@ public class DefaultTableModel extends AbstractTableModel {
     public int getColumnCount() {
         return columnModel.getColumnCount();
     }
-    
+
     public String getColumnName(int columnIndex) {
         String answer = null;
         if (columnIndex < 0 || columnIndex >= columnModel.getColumnCount()) {
@@ -201,7 +219,7 @@ public class DefaultTableModel extends AbstractTableModel {
         }
 
     }
-    
+
     public ValueModel getRowModel() {
         return rowModel;
     }

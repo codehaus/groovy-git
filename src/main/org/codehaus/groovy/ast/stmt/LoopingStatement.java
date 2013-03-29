@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,23 @@ package org.codehaus.groovy.ast.stmt;
 
 /**
 * This is an AST Node that provides some sort of looping mechanism. Typically
-* in the form of a block that will be executed repeatedly. 
-* DoWhileStatements, WhileStatements, and ForStatements are all examples of LoopingStatements. 
+* in the form of a block that will be executed repeatedly.
+* {@code DoWhileStatements}, {@code WhileStatements}, and {@code ForStatements}
+* are all examples of {@code LoopingStatements}.
 *
 * @author Hamlet D'Arcy
-*/ 
+*/
 public interface LoopingStatement {
-
-     /**
-     * Gets the loop block. 
+    /**
+     * Gets the loop block.
+     *
+     * return the {@code Statement}.
      */
-     public Statement getLoopBlock(); 
-     /**
-     * Sets the loop block. 
+    public Statement getLoopBlock();
+    /**
+     * Sets the loop block.
+     *
+     * @param loopBack the {@code Statement} to set.
      */
-     public void setLoopBlock(Statement loopBlock); 
+    public void setLoopBlock(Statement loopBlock);
 }

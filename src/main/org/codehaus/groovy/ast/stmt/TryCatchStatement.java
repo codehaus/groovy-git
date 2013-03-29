@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,26 +22,25 @@ import org.codehaus.groovy.ast.GroovyCodeVisitor;
 
 /**
  * Represents a try { ... } catch () finally {} statement in Groovy
- * 
+ *
  * @author <a href="mailto:james@coredevelopers.net">James Strachan</a>
- * @version $Revision$
  */
 public class TryCatchStatement extends Statement {
 
     private Statement tryStatement;
     private List<CatchStatement> catchStatements = new ArrayList<CatchStatement>();
     private Statement finallyStatement;
-    
+
 
     public TryCatchStatement(Statement tryStatement, Statement finallyStatement) {
         this.tryStatement = tryStatement;
         this.finallyStatement = finallyStatement;
     }
-    
+
     public void visit(GroovyCodeVisitor visitor) {
         visitor.visitTryCatchFinally(this);
     }
-    
+
     public List<CatchStatement> getCatchStatements() {
         return catchStatements;
     }
@@ -59,6 +58,7 @@ public class TryCatchStatement extends Statement {
     }
 
     /**
+     * @param ide the index to look for.
      * @return the catch statement of the given index or null
      */
     public CatchStatement getCatchStatement(int idx) {

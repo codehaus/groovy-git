@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2012 the original author or authors.
+ * Copyright 2003-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +112,7 @@ public class GroovyMain {
                 printHelp(out, options);
             } else if (cmd.hasOption('v')) {
                 String version = GroovySystem.getVersion();
-                out.println("Groovy Version: " + version + " JVM: " + System.getProperty("java.version") + 
+                out.println("Groovy Version: " + version + " JVM: " + System.getProperty("java.version") +
                         " Vendor: " + System.getProperty("java.vm.vendor")  + " OS: " + System.getProperty("os.name"));
             } else {
                 // If we fail, then exit with an error so scripting frameworks can catch it
@@ -143,7 +143,7 @@ public class GroovyMain {
             4,
             null, // footer
             false);
-       
+
         pw.flush();
     }
 
@@ -279,7 +279,7 @@ public class GroovyMain {
      */
      private static boolean process(CommandLine line) throws ParseException, IOException {
         List args = line.getArgList();
-        
+
         if (line.hasOption('D')) {
             String[] values = line.getOptionValues('D');
 
@@ -289,7 +289,7 @@ public class GroovyMain {
         }
 
         GroovyMain main = new GroovyMain();
-        
+
         // add the ability to parse scripts with a specified encoding
         main.conf.setSourceEncoding(line.getOptionValue('c',main.conf.getSourceEncoding()));
 
@@ -323,7 +323,7 @@ public class GroovyMain {
             String p = line.getOptionValue('l', "1960"); // default port to listen to
             main.port = Integer.parseInt(p);
         }
-        
+
         // we use "," as default, because then split will create
         // an empty array if no option is set
         String disabled = line.getOptionValue("disableopt", ",");
@@ -331,7 +331,7 @@ public class GroovyMain {
         for (String deopt_i : deopts) {
             main.conf.getOptimizationOptions().put(deopt_i,false);
         }
-        
+
         if (line.hasOption("indy")) {
             CompilerConfiguration.DEFAULT.getOptimizationOptions().put("indy", true);
             main.conf.getOptimizationOptions().put("indy", true);
@@ -430,6 +430,9 @@ public class GroovyMain {
      * - name.gvy
      * - name.gy
      * - name.gsh
+     *
+     * @param input name of the script file to be found.
+     * @return a Groovy {@code File}
      */
     public File huntForTheScriptFile(String input) {
         String scriptFileName = input.trim();

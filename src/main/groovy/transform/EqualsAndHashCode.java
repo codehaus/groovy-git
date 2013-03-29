@@ -95,9 +95,9 @@ import java.lang.annotation.Target;
  *
  * def p3 = new IntPairWithSum(1, 2)
  *
- * assert p1 == p2 && p2 == p1
- * assert p1 == p3 && p3 == p1
- * assert p3 == p2 && p2 == p3
+ * assert p1 == p2 &amp;&amp; p2 == p1
+ * assert p1 == p3 &amp;&amp; p3 == p1
+ * assert p3 == p2 &amp;&amp; p2 == p3
  * </pre>
  * Note that if you create any domain classes which don't have exactly the
  * same contract as <code>IntPair</code> then you should provide an appropriate
@@ -109,7 +109,7 @@ import java.lang.annotation.Target;
  * {@code @TupleConstructor(includeSuperProperties=true)}
  * class IntTriple extends IntPair { int z }
  * def t1 = new IntTriple(1, 2, 3)
- * assert p1 != t1 && p2 != t1 && t1 != p3
+ * assert p1 != t1 &amp;&amp; p2 != t1 &amp;&amp; t1 != p3
  * </pre>
  *
  * The alternative supported style regards any kind of inheritance as creation of
@@ -146,13 +146,13 @@ import java.lang.annotation.Target;
  * e.g. for comparing instances of the <code>IntPair</code> and <code>IntTriple</code> classes
  * discussed earlier, you could provide the following method in <code>IntPair</code>:
  * <pre>
- * boolean hasEqualXY(other) { other.x == getX() && other.y == getY() }
+ * boolean hasEqualXY(other) { other.x == getX() &amp;&amp; other.y == getY() }
  * </pre>
  * Then for the objects defined earlier, the following would be true:
  * <pre>
- * assert p1.hasEqualXY(t1) && t1.hasEqualXY(p1)
- * assert p2.hasEqualXY(t1) && t1.hasEqualXY(p2)
- * assert p3.hasEqualXY(t1) && t1.hasEqualXY(p3)
+ * assert p1.hasEqualXY(t1) &amp;&amp; t1.hasEqualXY(p1)
+ * assert p2.hasEqualXY(t1) &amp;&amp; t1.hasEqualXY(p2)
+ * assert p3.hasEqualXY(t1) &amp;&amp; t1.hasEqualXY(p3)
  * </pre>
  * There is also support for including or excluding fields/properties by name when constructing
  * the equals and hashCode methods as shown here:
@@ -191,6 +191,8 @@ public @interface EqualsAndHashCode {
      * List of field and/or property names to exclude from the equals and hashCode calculations.
      * Must not be used if 'includes' is used. For convenience, a String with comma separated names
      * can be used in addition to an array (using Groovy's literal list notation) of String values.
+     *
+     * @return an array of {@code String}s.
      */
     String[] excludes() default {};
 
@@ -198,27 +200,37 @@ public @interface EqualsAndHashCode {
      * List of field and/or property names to include within the equals and hashCode calculations.
      * Must not be used if 'excludes' is used. For convenience, a String with comma separated names
      * can be used in addition to an array (using Groovy's literal list notation) of String values.
-     */
+      *
+     * @return an array of {@code String}s.
+    */
     String[] includes() default {};
 
     /**
-     * Whether to cache hashCode calculations. You should only set this to true if
+     * Whether to cache {@code hashCode} calculations. You should only set this to true if
      * you know the object is immutable (or technically mutable but never changed).
+     *
+     * @return whether {@code hashCode} calculations are cached.
      */
     boolean cache() default false;
 
     /**
-     * Whether to include super in equals and hashCode calculations.
+     * Whether to include {@code super} in {@code equals} and {@code hashCode} calculations.
+     *
+     * @return whether {@code super} is included in {@code equals} and {@code hashCode} calculations.
      */
     boolean callSuper() default false;
 
     /**
-     * Include fields as well as properties in equals and hashCode calculations.
+     * Include fields as well as properties in {@code equals} and {@code hashCode} calculations.
+     *
+     * @return whether fields as well as properties are included in {@code equals} and {@code hashCode} calculations.
      */
     boolean includeFields() default false;
 
     /**
-     * Generate a canEqual method to be used by equals.
+     * Generate a {@code canEqual} method to be used by {@code equals}.
+     *
+     * @return whether a {@code canEqual} method is used.
      */
     boolean useCanEqual() default true;
 }

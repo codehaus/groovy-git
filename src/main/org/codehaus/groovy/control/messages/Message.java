@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,79 +23,64 @@ import org.codehaus.groovy.control.ProcessingUnit;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.syntax.SyntaxException;
 
-
-
 /**
  *  A base class for compilation messages.
  *
  *  @author <a href="mailto:cpoirier@dreaming.org">Chris Poirier</a>
- *
- *  @version $Id$
  */
+public abstract class Message {
+   /**
+    *  Writes the message to the specified {@code PrintWriter}.  The supplied
+    *  {@code ProcessingUnit} is the unit that holds this {@code Message}.
+    *
+    * @param writer the {@code PrintWriter } to write to.
+    * @param janitor
+    */
+    public abstract void write(PrintWriter writer, Janitor janitor);
 
-public abstract class Message
-{
-    
-    
    /**
-    *  Writes the message to the specified PrintWriter.  The supplied
-    *  ProcessingUnit is the unit that holds this Message.
+    *  A synonym for write(writer, owner, null).
+    *
+    * @param writer the {@code PrintWriter } to write to.
     */
-    
-    public abstract void write( PrintWriter writer, Janitor janitor );
-    
-    
-   /**
-    *  A synonym for write( writer, owner, null ).
-    */
-    
-    public final void write( PrintWriter writer)
-    {
-        write( writer,  null );
+    public final void write(PrintWriter writer) {
+        write(writer,  null);
     }
-    
-    
-    
+
   //---------------------------------------------------------------------------
   // FACTORY METHODS
-    
-    
+
    /**
-    *  Creates a new Message from the specified text.
+    *  Creates a new {@code Message} from the specified text.
+    *
+    * @param text the text to wrap.
+    * @param owner the {@code ProcessingUnit}.
+    * @return the {@code Message}.
     */
-    
-    public static Message create( String text, ProcessingUnit owner )
-    {
-        return new SimpleMessage( text, owner );
+    public static Message create(String text, ProcessingUnit owner) {
+        return new SimpleMessage(text, owner);
     }
-    
-    
-          
+
    /**
-    *  Creates a new Message from the specified text.
+    *  Creates a new {@code Message} from the specified text.
+    *
+    * @param text the text to wrap.
+    * @param data
+    * @param owner the {@code ProcessingUnit}.
+    * @return the {@code Message}.
     */
-     
-    public static Message create( String text, Object data, ProcessingUnit owner  )
-    {
-        return new SimpleMessage( text, data, owner);
+    public static Message create(String text, Object data, ProcessingUnit owner) {
+        return new SimpleMessage(text, data, owner);
     }
-     
-     
-           
+
    /**
-    *  Creates a new Message from the specified SyntaxException.
+    *  Creates a new {@code Message} from the specified {@code SyntaxException}.
+    *
+    * @param error
+    * @param owner the {@code ProcessingUnit}.
+    * @return the {@code Message}.
     */
-      
-    public static Message create( SyntaxException error, SourceUnit owner )
-    {
-        return new SyntaxErrorMessage( error, owner );
+    public static Message create(SyntaxException error, SourceUnit owner) {
+        return new SyntaxErrorMessage(error, owner);
     }
-      
-    
-      
-    
 }
-
-
-
-

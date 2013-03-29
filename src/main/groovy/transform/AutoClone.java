@@ -253,6 +253,8 @@ public @interface AutoClone {
      * of serialization when using the {@code SERIALIZATION} style, i.e. this flag is ignored;
      * instead adjust your serialization code to include or exclude the desired
      * properties (and/or fields) which should carry over during cloning.
+     *
+     * @return the array of {@code String}s.
      */
     String[] excludes() default {};
 
@@ -268,11 +270,15 @@ public @interface AutoClone {
      * NOTE: This doesn't affect field copying that might occur as part of
      * serialization when using the {@code SERIALIZATION} style, i.e. this flag is ignored;
      * instead adjust your serialization code to include or exclude your fields.
+     *
+     * @return whether fields are included.
      */
     boolean includeFields() default false;
 
     /**
      * Style to use when cloning.
+     *
+     * @return the current {@code groovy.transform.AutoCloneStyle}.
      */
     groovy.transform.AutoCloneStyle style() default AutoCloneStyle.CLONE;
 }

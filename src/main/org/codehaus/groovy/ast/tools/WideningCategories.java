@@ -108,21 +108,21 @@ public class WideningCategories {
     }
     /**
      * It is of a long category, if the provided type is a
-     * long, its wrapper or if it is a long category. 
+     * long, its wrapper or if it is a long category.
      */
     public static boolean isLongCategory(ClassNode type) {
         return  type==long_TYPE     ||  isIntCategory(type);
     }
     /**
      * It is of a BigInteger category, if the provided type is a
-     * long category or a BigInteger. 
+     * long category or a BigInteger.
      */
     public static boolean isBigIntCategory(ClassNode type) {
         return  type==BigInteger_TYPE || isLongCategory(type);
     }
     /**
      * It is of a BigDecimal category, if the provided type is a
-     * BigInteger category or a BigDecimal. 
+     * BigInteger category or a BigDecimal.
      */
     public static boolean isBigDecCategory(ClassNode type) {
         return  type==BigDecimal_TYPE || isBigIntCategory(type);
@@ -440,7 +440,7 @@ public class WideningCategories {
         Collections.addAll(interfaces, node.getInterfaces());
         extractInterfaces(node.getSuperClass(), interfaces);
     }
-    
+
     /**
      * Given the list of interfaces implemented by two class nodes, returns the list of the most specific common
      * implemented interfaces.
@@ -550,7 +550,7 @@ public class WideningCategories {
     /**
      * This {@link ClassNode} specialization is used when the lowest upper bound of two types
      * cannot be represented by an existing type. For example, if B extends A,  C extends A
-     * and both C & B implement a common interface not implemented by A, then we use this class
+     * and both C &amp; B implement a common interface not implemented by A, then we use this class
      * to represent the bound.
      *
      * At compile time, some classes like {@link org.codehaus.groovy.classgen.AsmClassGenerator} need

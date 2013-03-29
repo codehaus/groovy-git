@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2012 the original author or authors.
+ * Copyright 2003-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,36 +33,39 @@ import org.objectweb.asm.Opcodes;
 
 /**
  * This class is used as a plugable way to resolve class names.
- * An instance of this class has to be added to {@link CompilationUnit} using 
- * {@link CompilationUnit#setClassNodeResolver(ClassNodeResolver)}. The 
- * CompilationUnit will then set the resolver on the {@link ResolveVisitor} each 
+ * An instance of this class has to be added to {@link CompilationUnit} using
+ * {@link CompilationUnit#setClassNodeResolver(ClassNodeResolver)}. The
+ * CompilationUnit will then set the resolver on the {@link ResolveVisitor} each
  * time new. The ResolveVisitor will prepare name lookup and then finally ask
- * the resolver if the class exists. This resolver then can return either a 
+ * the resolver if the class exists. This resolver then can return either a
  * SourceUnit or a ClassNode. In case of a SourceUnit the compiler is notified
  * that a new source is to be added to the compilation queue. In case of a
  * ClassNode no further action than the resolving is done. The lookup result
  * is stored in the helper class {@link LookupResult}. This class provides a
  * class cache to cache lookups. If you don't want this, you have to override
- * the methods {@link ClassNodeResolver#cacheClass(String, ClassNode)} and 
+ * the methods {@link ClassNodeResolver#cacheClass(String, ClassNode)} and
  * {@link ClassNodeResolver#getFromClassCache(String)}. Custom lookup logic is
- * supposed to go into the method 
- * {@link ClassNodeResolver#findClassNode(String, CompilationUnit)} while the 
+ * supposed to go into the method
+ * {@link ClassNodeResolver#findClassNode(String, CompilationUnit)} while the
  * entry method is {@link ClassNodeResolver#resolveName(String, CompilationUnit)}
- * 
+ *
  * @author <a href="mailto:blackdrag@gmx.org">Jochen "blackdrag" Theodorou</a>
  */
 public class ClassNodeResolver {
 
     /**
-     * Helper class to return either a SourceUnit or ClassNode.
+     * Helper class to return either a {@code SourceUnit} or {@code ClassNode}.
      * @author <a href="mailto:blackdrag@gmx.org">Jochen "blackdrag" Theodorou</a>
      */
     public static class LookupResult {
         private SourceUnit su;
         private ClassNode cn;
         /**
-         * creates a new LookupResult. You are not supposed to supply
-         * a SourceUnit and a ClassNode at the same time
+         * Creates a new {@code LookupResult}. You are not supposed to supply
+         * a {@code SourceUnit} and a {@code ClassNode} at the same time.
+         *
+         * @param su the {@code SourceUnit}
+         * @param cn the {@code ClassNode}
          */
         public LookupResult(SourceUnit su, ClassNode cn) {
             this.su = su;
@@ -71,47 +74,55 @@ public class ClassNodeResolver {
             if (su!=null && cn!=null) throw new IllegalArgumentException("SourceUnit and ClassNode cannot be set at the same time.");
         }
         /**
-         * returns true if a ClassNode is stored
+         * Returns true if a {@code ClassNode} is stored.
+         *
+         * @return true if a {@code ClassNode} is stored.
          */
         public boolean isClassNode() { return cn!=null; }
         /**
-         * returns true if a SourecUnit is stored
+         * Returns true if a {@code SourecUnit} is stored.
+         *
+         * @return true if a {@code SourecUnit} is stored.
          */
         public boolean isSourceUnit() { return su!=null; }
         /**
-         * returns the SourceUnit
+         * Returns the {@code SourceUnit}.
+         *
+         * @return the {@code SourceUnit}.
          */
         public SourceUnit getSourceUnit() { return su; }
         /**
-         * returns the ClassNode
+         * Returns the {@code ClassNode}.
+         *
+         * @return the {@code ClassNode}.
          */
         public ClassNode getClassNode() { return cn; }
     }
-    
+
     // Map to store cached classes
     private Map<String,ClassNode> cachedClasses = new HashMap();
     /**
-     * Internal helper used to indicate a cache hit for a class that does not exist. 
-     * This way further lookups through a slow {@link #findClassNode(String, CompilationUnit)} 
+     * Internal helper used to indicate a cache hit for a class that does not exist.
+     * This way further lookups through a slow {@link #findClassNode(String, CompilationUnit)}
      * path can be avoided.
-     * WARNING: This class is not to be used outside of ClassNodeResolver.
+     * WARNING: This class is not to be used outside of {@code ClassNodeResolver}.
      */
     protected static final ClassNode NO_CLASS = new ClassNode("NO_CLASS", Opcodes.ACC_PUBLIC,ClassHelper.OBJECT_TYPE){
         public void setRedirect(ClassNode cn) {
             throw new GroovyBugError("This is a dummy class node only! Never use it for real classes.");
         };
     };
-    
+
     /**
      * Resolves the name of a class to a SourceUnit or ClassNode. If no
      * class or source is found this method returns null. A lookup is done
      * by first asking the cache if there is an entry for the class already available
-     * to then call {@link #findClassNode(String, CompilationUnit)}. The result 
+     * to then call {@link #findClassNode(String, CompilationUnit)}. The result
      * of that method call will be cached if a ClassNode is found. If a SourceUnit
      * is found, this method will not be asked later on again for that class, because
      * ResolveVisitor will first ask the CompilationUnit for classes in the
      * compilation queue and it will find the class for that SourceUnit there then.
-     * method return a ClassNode instead of a SourceUnit, the res 
+     * method return a ClassNode instead of a SourceUnit, the res
      * @param name - the name of the class
      * @param compilationUnit - the current CompilationUnit
      * @return the LookupResult
@@ -120,7 +131,7 @@ public class ClassNodeResolver {
         ClassNode res = getFromClassCache(name);
         if (res==NO_CLASS) return null;
         if (res!=null) return new LookupResult(null,res);
-        
+
         LookupResult lr = findClassNode(name, compilationUnit);
         if (lr != null) {
             if (lr.isClassNode()) cacheClass(name, lr.getClassNode());
@@ -130,7 +141,7 @@ public class ClassNodeResolver {
             return null;
         }
     }
-    
+
     /**
      * caches a ClassNode
      * @param name - the name of the class
@@ -139,7 +150,7 @@ public class ClassNodeResolver {
     public void cacheClass(String name, ClassNode res) {
         cachedClasses.put(name, res);
     }
-    
+
     /**
      * returns whatever is stored in the class cache for the given name
      * @param name - the name of the class
@@ -152,14 +163,14 @@ public class ClassNodeResolver {
         ClassNode cached = cachedClasses.get(name);
         return cached;
     }
-    
+
     /**
      * Extension point for custom lookup logic of finding ClassNodes. Per default
      * this will use the CompilationUnit class loader to do a lookup on the class
-     * path and load the needed class using that loader. Or if a script is found 
-     * and that script is seen as "newer", the script will be used instead of the 
+     * path and load the needed class using that loader. Or if a script is found
+     * and that script is seen as "newer", the script will be used instead of the
      * class.
-     * 
+     *
      * @param name - the name of the class
      * @param compilationUnit - the current compilation unit
      * @return the lookup result
@@ -167,7 +178,7 @@ public class ClassNodeResolver {
     public LookupResult findClassNode(String name, CompilationUnit compilationUnit) {
         return tryAsLoaderClassOrScript(name, compilationUnit);
     }
-    
+
     /**
      * This method is used to realize the lookup of a class using the compilation
      * unit class loader. Should no class be found we fall abck to a script lookup.
@@ -205,9 +216,9 @@ public class ClassNodeResolver {
             return tryAsScript(name, compilationUnit, cls);
         }
         ClassNode cn = ClassHelper.make(cls);
-        return new LookupResult(null,cn); 
+        return new LookupResult(null,cn);
     }
-    
+
     /**
      * try to find a script using the compilation unit class loader.
      */
@@ -217,11 +228,11 @@ public class ClassNodeResolver {
             ClassNode cn = ClassHelper.make(oldClass);
             lr = new LookupResult(null,cn);
         }
-        
+
         if (name.startsWith("java.")) return lr;
         //TODO: don't ignore inner static classes completely
         if (name.indexOf('$') != -1) return lr;
-        
+
         // try to find a script from classpath*/
         GroovyClassLoader gcl = compilationUnit.getClassLoader();
         URL url = null;

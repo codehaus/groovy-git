@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.awt.Insets;
 
 import javax.swing.JPanel;
 
-/** 
+/**
  * Represents a HTML style table layout
  *
  * @author <a href="mailto:james@coredevelopers.net">James Strachan</a>
@@ -35,7 +35,7 @@ public class TableLayout extends JPanel {
     public TableLayout() {
         setLayout(new GridBagLayout());
     }
-    
+
     public int getCellpadding() {
         return cellpadding;
     }
@@ -55,7 +55,7 @@ public class TableLayout extends JPanel {
     }
 
     /**
-     * Creates a new row index for child <tr> tags 
+     * Creates a new row index for child &lt;tr&gt; tags
      * @return nextRowIndex the row number
      */
     public int nextRowIndex() {

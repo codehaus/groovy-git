@@ -208,8 +208,8 @@ public class XmlUtil {
      * @param schemaLanguage the schema language used, e.g. XML Schema or RelaxNG (as per the String representation in javax.xml.XMLConstants)
      * @param schemas        the schemas to validate against
      * @return the created SAXParser
-     * @throws SAXException
-     * @throws ParserConfigurationException
+     * @throws SAXException for a SAX execution error
+     * @throws ParserConfigurationException for a parser set up error
      * @see #newSAXParser(String, boolean, boolean, Source...)
      * @since 1.8.7
      */
@@ -226,8 +226,8 @@ public class XmlUtil {
      * @param validating     will the parser also validate against DTDs
      * @param schemas        the schemas to validate against
      * @return the created SAXParser
-     * @throws SAXException
-     * @throws ParserConfigurationException
+     * @throws SAXException for a SAX execution error
+     * @throws ParserConfigurationException for a parser set up error
      * @since 1.8.7
      */
     public static SAXParser newSAXParser(String schemaLanguage, boolean namespaceAware, boolean validating, Source... schemas) throws SAXException, ParserConfigurationException {
@@ -253,8 +253,8 @@ public class XmlUtil {
      * @param schemaLanguage the schema language used, e.g. XML Schema or RelaxNG (as per the String representation in javax.xml.XMLConstants)
      * @param schema         a file containing the schema to validate against
      * @return the created SAXParser
-     * @throws SAXException
-     * @throws ParserConfigurationException
+     * @throws SAXException for a SAX execution error
+     * @throws ParserConfigurationException for a parser set up error
      * @see #newSAXParser(String, boolean, boolean, File)
      * @since 1.8.7
      */
@@ -271,8 +271,8 @@ public class XmlUtil {
      * @param validating     will the parser also validate against DTDs
      * @param schema         a file containing the schema to validate against
      * @return the created SAXParser
-     * @throws SAXException
-     * @throws ParserConfigurationException
+     * @throws SAXException for a SAX execution error
+     * @throws ParserConfigurationException for a parser set up error
      * @since 1.8.7
      */
     public static SAXParser newSAXParser(String schemaLanguage, boolean namespaceAware, boolean validating, File schema) throws SAXException, ParserConfigurationException {
@@ -288,8 +288,8 @@ public class XmlUtil {
      * @param schemaLanguage the schema language used, e.g. XML Schema or RelaxNG (as per the String representation in javax.xml.XMLConstants)
      * @param schema         a URL pointing to the schema to validate against
      * @return the created SAXParser
-     * @throws SAXException
-     * @throws ParserConfigurationException
+     * @throws SAXException for a SAX execution error
+     * @throws ParserConfigurationException for a parser set up error
      * @see #newSAXParser(String, boolean, boolean, URL)
      * @since 1.8.7
      */
@@ -306,8 +306,8 @@ public class XmlUtil {
      * @param validating     will the parser also validate against DTDs
      * @param schema         a URL pointing to the schema to validate against
      * @return the created SAXParser
-     * @throws SAXException
-     * @throws ParserConfigurationException
+     * @throws SAXException for a SAX execution error
+     * @throws ParserConfigurationException for a parser set up error
      * @since 1.8.7
      */
     public static SAXParser newSAXParser(String schemaLanguage, boolean namespaceAware, boolean validating, URL schema) throws SAXException, ParserConfigurationException {

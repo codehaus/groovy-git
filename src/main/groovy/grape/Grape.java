@@ -33,6 +33,8 @@ public class Grape {
      * This is a static access kill-switch.  All of the static shortcut
      * methods in this class will not work if this property is set to false.
      * By default it is set to true.
+     *
+     * @return the value.
      */
     public static boolean getEnableGrapes() {
         return enableGrapes;
@@ -42,6 +44,8 @@ public class Grape {
      * This is a static access kill-switch.  All of the static shortcut
      * methods in this class will not work if this property is set to false.
      * By default it is set to true.
+     *
+     * @param enableGrapes the value to set.
      */
     public static void setEnableGrapes(boolean enableGrapes) {
         Grape.enableGrapes = enableGrapes;
@@ -64,6 +68,8 @@ public class Grape {
      * if found.
      * <p>
      * By default it is set to false.
+     *
+     * @return whether auto download is enabled.
      */
     public static boolean getEnableAutoDownload() {
         return enableAutoDownload;
@@ -84,6 +90,8 @@ public class Grape {
      * automatically be downloaded.  Also, any versions expressed as a range
      * will be checked for new versions and downloaded (with dependencies)
      * if found. By default it is set to false.
+     *
+     * @param enableAutoDownload the value to set.
      */
     public static void setEnableAutoDownload(boolean enableAutoDownload) {
         Grape.enableAutoDownload = enableAutoDownload;
@@ -157,7 +165,7 @@ public class Grape {
     public static URI[] resolve(Map<String, Object> args, Map... dependencies) {
         return resolve(args, null, dependencies);
     }
-    
+
     public static URI[] resolve(Map<String, Object> args, List depsInfo, Map... dependencies) {
         URI[] uris = null;
         if (enableGrapes) {
@@ -191,7 +199,7 @@ public class Grape {
         }
 
     }
-    
+
     public static void addResolver(Map<String, Object> args) {
         if (enableGrapes) {
             GrapeEngine instance = getInstance();
@@ -201,4 +209,3 @@ public class Grape {
         }
     }
 }
-

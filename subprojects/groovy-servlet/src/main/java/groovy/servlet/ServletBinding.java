@@ -39,7 +39,7 @@ import java.util.Map;
  * Servlet-specific binding extension to lazy load the writer or the output
  * stream from the response.
  * <p>
- * <h3>Eager variables</h3>
+ * <h1>Eager variables</h1>
  * <ul>
  * <li><tt>"request"</tt> : the <code>HttpServletRequest</code> object</li>
  * <li><tt>"response"</tt> : the <code>HttpServletRequest</code> object</li>
@@ -50,7 +50,7 @@ import java.util.Map;
  * <li><tt>"headers"</tt> : map of all <tt>request</tt> header fields</li>
  * </ul>
  * <p>
- * <h3>Lazy variables</h3>
+ * <h1>Lazy variables</h1>
  * <ul>
  * <li><tt>"out"</tt> : <code>response.getWriter()</code></li>
  * <li><tt>"sout"</tt> : <code>response.getOutputStream()</code></li>
@@ -93,11 +93,11 @@ import java.util.Map;
  * @author Jochen Theodorou
  */
 public class ServletBinding extends Binding {
-    
+
     /**
      * A OutputStream dummy that will throw a GroovyBugError for any
-     * write method call to it. 
-     * 
+     * write method call to it.
+     *
      * @author Jochen Theodorou
      */
     private static class InvalidOutputStream extends OutputStream {
@@ -112,18 +112,18 @@ public class ServletBinding extends Binding {
     /**
      * A class to manage the response output stream and writer.
      * If the stream have been 'used', then using the writer will cause
-     * a IllegalStateException. If the writer have been 'used', then 
+     * a IllegalStateException. If the writer have been 'used', then
      * using the stream will cause a IllegalStateException. 'used' means
      * any write method has been called. Simply requesting the objects will
-     * not cause an exception. 
-     * 
+     * not cause an exception.
+     *
      * @author Jochen Theodorou
      */
     private static class ServletOutput {
         private HttpServletResponse response;
         private ServletOutputStream outputStream;
         private PrintWriter writer;
-        
+
         public ServletOutput(HttpServletResponse response) {
             this.response = response;
         }
@@ -135,7 +135,7 @@ public class ServletBinding extends Binding {
         public ServletOutputStream getOutputStream() {
             return new ServletOutputStream() {
                 public void write(int b) throws IOException {
-                    getResponseStream().write(b);                    
+                    getResponseStream().write(b);
                 }
                 public void close() throws IOException {
                     getResponseStream().close();
@@ -198,9 +198,9 @@ public class ServletBinding extends Binding {
                     return this;
                 }
             };
-        }        
-    }    
-    
+        }
+    }
+
     private boolean initialized;
 
     /**
@@ -316,11 +316,11 @@ public class ServletBinding extends Binding {
         // bind forward method
         MethodClosure c = new MethodClosure(this, "forward");
         super.setVariable("forward", c);
-        
+
         // bind include method
         c = new MethodClosure(this, "include");
         super.setVariable("include", c);
-        
+
         // bind redirect method
         c = new MethodClosure(this, "redirect");
         super.setVariable("redirect", c);
@@ -340,14 +340,14 @@ public class ServletBinding extends Binding {
             throw new IllegalArgumentException("Can't bind variable to key named '" + name + "'.");
         }
     }
-    
+
     public void forward(String path) throws ServletException, IOException {
         HttpServletRequest request = (HttpServletRequest) super.getVariable("request");
         HttpServletResponse response = (HttpServletResponse) super.getVariable("response");
         RequestDispatcher dispatcher = request.getRequestDispatcher(path);
         dispatcher.forward(request, response);
-    } 
-    
+    }
+
     public void include(String path) throws ServletException, IOException {
         HttpServletRequest request = (HttpServletRequest) super.getVariable("request");
         HttpServletResponse response = (HttpServletResponse) super.getVariable("response");
@@ -358,6 +358,5 @@ public class ServletBinding extends Binding {
     public void redirect(String location) throws IOException {
         HttpServletResponse response = (HttpServletResponse) super.getVariable("response");
         response.sendRedirect(location);
-    }    
+    }
 }
-

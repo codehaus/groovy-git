@@ -65,6 +65,8 @@ public @interface TupleConstructor {
      * List of field and/or property names to exclude from the constructor.
      * Must not be used if 'includes' is used. For convenience, a String with comma separated names
      * can be used in addition to an array (using Groovy's literal list notation) of String values.
+     *
+     * @return an array of {@code String}s.
      */
     String[] excludes() default {};
 
@@ -72,32 +74,45 @@ public @interface TupleConstructor {
      * List of field and/or property names to include within the constructor.
      * Must not be used if 'excludes' is used. For convenience, a String with comma separated names
      * can be used in addition to an array (using Groovy's literal list notation) of String values.
+     *
+     * @return an array of {@code String}s.
      */
     String[] includes() default {};
 
     /**
      * Include fields in the constructor.
+     *
+     * @return  whether to include fields in the constructor.
      */
     boolean includeFields() default false;
 
     /**
      * Include properties in the constructor.
+     *
+     * @return whether to include properties in the constructor.
      */
     boolean includeProperties() default true;
 
     /**
      * Include fields from super classes in the constructor.
+     *
+     * @return whether to include fields from super classes in the constructor.
      */
     boolean includeSuperFields() default false;
 
     /**
      * Include properties from super classes in the constructor.
+     *
+     * @return whether to include properties from super classes in the constructor.
      */
     boolean includeSuperProperties() default false;
 
     /**
-     * Should super properties be called within a call to the parent constructor.
-     * rather than set as properties
+     * Should {@code super} properties be called within a call to the parent constructor
+     * rather than set as properties.
+     *
+     * @return whether {@code super} properties be called within a call to the parent constructor
+     * rather than set as properties.
      */
     boolean callSuper() default false;
 
@@ -105,6 +120,8 @@ public @interface TupleConstructor {
      * By default, this annotation becomes a no-op if you provide your own constructor.
      * By setting {@code force=true} then the tuple constructor(s) will be added regardless of
      * whether existing constructors exist. It is up to you to avoid creating duplicate constructors.
+     *
+     * @return whether to create tuple constructors.
      */
     boolean force() default false;
 }

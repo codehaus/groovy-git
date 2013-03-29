@@ -148,6 +148,8 @@ public @interface Immutable {
      * </pre>
      *
      * @since 1.8.7
+     *
+     * @return an array of {@code Class}es.
      */
     Class[] knownImmutableClasses() default {};
 
@@ -166,6 +168,8 @@ public @interface Immutable {
      * </pre>
      *
      * @since 2.1.0
+     *
+     * @return an array of {@code String}s.
      */
     String[] knownImmutables() default {};
 }

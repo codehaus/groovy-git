@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,39 +16,49 @@
 package org.codehaus.groovy.ast;
 
 /**
- * A special visitor for working with the structure of a class. In general, your 
- * will want to use the Abstract class based on this class {@link ClassCodeVisitorSupport}. 
- * 
+ * A special visitor for working with the structure of a class. In general, your
+ * will want to use the Abstract class based on this class {@link ClassCodeVisitorSupport}.
+ *
  * @see org.codehaus.groovy.ast.ClassNode
  * @see org.codehaus.groovy.ast.ClassCodeVisitorSupport
- * 
+ *
  * @author <a href="mailto:james@coredevelopers.net">James Strachan</a>
  * @version $Revision$
  */
 public interface GroovyClassVisitor {
 
-    /**
-    * Visit a ClassNode. 
-    */ 
+  /**
+    * Visit a ClassNode.
+    *
+    * @param node the node to visit.
+    */
     void visitClass(ClassNode node);
 
-    /**
-    * Visit a ConstructorNode. 
-    */ 
+  /**
+    * Visit a ConstructorNode.
+    *
+    * @param node the node to visit.
+    */
     void visitConstructor(ConstructorNode node);
 
-    /**
-    * Visit a MethodNode. 
-    */ 
+  /**
+    * Visit a MethodNode.
+    *
+    * @param node the node to visit.
+    */
     void visitMethod(MethodNode node);
 
-    /**
-    * Visit a FieldNode. 
-    */ 
+  /**
+    * Visit a FieldNode.
+    *
+    * @param node the node to visit.
+    */
     void visitField(FieldNode node);
 
-    /**
-    * Visit a PropertyNode. 
-    */ 
+  /**
+    * Visit a PropertyNode.
+    *
+    * @param node the node to visit.
+    */
     void visitProperty(PropertyNode node);
 }

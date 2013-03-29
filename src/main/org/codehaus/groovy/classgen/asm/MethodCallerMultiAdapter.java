@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ public class MethodCallerMultiAdapter {
 
     /**
      * @param methodVisitor
-     * @param numberOfArguments a value >0 describing how many arguments are additionally used for the method call
+     * @param numberOfArguments a value &gt; 0 describing how many arguments are additionally used for the method call
      * @param safe
      * @param spreadSafe
      */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,16 +23,15 @@ import org.codehaus.groovy.ast.expr.Expression;
 
 /**
  * Represents a switch (object) { case value: ... case [1, 2, 3]: ...  default: ... } statement in Groovy.
- * 
+ *
  * @author <a href="mailto:james@coredevelopers.net">James Strachan</a>
- * @version $Revision$
  */
 public class SwitchStatement extends Statement {
 
     private Expression expression;
     private List<CaseStatement> caseStatements = new ArrayList<CaseStatement>();
     private Statement defaultStatement;
-    
+
 
     public SwitchStatement(Expression expression) {
         this(expression, EmptyStatement.INSTANCE);
@@ -52,7 +51,7 @@ public class SwitchStatement extends Statement {
     public void visit(GroovyCodeVisitor visitor) {
         visitor.visitSwitch(this);
     }
-    
+
     public List<CaseStatement> getCaseStatements() {
         return caseStatements;
     }
@@ -64,7 +63,7 @@ public class SwitchStatement extends Statement {
     public void setExpression(Expression e) {
         expression=e;
     }
-    
+
     public Statement getDefaultStatement() {
         return defaultStatement;
     }
@@ -78,6 +77,7 @@ public class SwitchStatement extends Statement {
     }
 
     /**
+     * @param idx the index to find.
      * @return the case statement of the given index or null
      */
     public CaseStatement getCaseStatement(int idx) {

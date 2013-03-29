@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,47 +25,49 @@ import org.apache.tools.ant.types.Reference;
 import org.codehaus.groovy.tools.LoaderConfiguration;
 import org.codehaus.groovy.tools.RootLoader;
 
- 
+
 /**
  * Sets the RootLoader as reference.
  * Reexecution of this task will set a new instance of RootLoader for
- * the reference. 
+ * the reference.
  *
  * arguments:
  * <ul>
  * <li>ref</li>
  * <li>classpath</li>
  * </ul>
- * 
+ *
  * all arguments are required.
  *
  * As ant requires an AntClassLoader as reference, this will create a RootLoader
  * and set an AntClassLoader as child and stored in the reference. The AntClassLoader
  * instance will not have a classpath nor will it have access to the classpath somehow,
- * all loading is done by the RootLoader parent. To avoid problems with loading classes 
+ * all loading is done by the RootLoader parent. To avoid problems with loading classes
  * multiple times and using them at the same time, this task will filter out the ant jars
  * and the commons-logging jars. This only works if the ant jars are starting with "ant-" and
  * the logging jar starts with "commons-logging-".
- * 
+ *
  * This was needed because if ant wants to access a task argument that uses for example a Path
  * it look for a matching method which includes a matching class. But two classes of the same name
  * with different classloaders are different, so ant would not be able to find the method.
  *
  * @see org.codehaus.groovy.tools.RootLoader
  * @author Jochen Theodorou
- * @version $Revision$ 
+ * @version $Revision$
  */
 public class RootLoaderRef extends MatchingTask {
     private String name;
     private Path taskClasspath;
-    
+
     /**
-     * sets the name of the reference which should store the Loader
+     * Sets the name of the reference which should store the Loader
+     *
+     * @param n the name.
      */
     public void setRef(String n){
         name = n;
     }
-    
+
     public void execute() throws BuildException {
         if (taskClasspath==null || taskClasspath.size()==0) {
             throw new BuildException("no classpath given");
@@ -74,7 +76,7 @@ public class RootLoaderRef extends MatchingTask {
         AntClassLoader loader = new AntClassLoader(makeRoot(),true);
         project.addReference(name,loader);
     }
-    
+
     private RootLoader makeRoot() {
         String[] list = taskClasspath.list();
         LoaderConfiguration lc = new LoaderConfiguration();
@@ -92,7 +94,7 @@ public class RootLoaderRef extends MatchingTask {
         }
         return new RootLoader(lc);
     }
-    
+
     /**
      * Set the classpath to be used for this compilation.
      *
@@ -106,7 +108,7 @@ public class RootLoaderRef extends MatchingTask {
             taskClasspath.append(classpath);
         }
     }
-    
+
     /**
      * Adds a reference to a classpath defined elsewhere.
      * @param r a reference to a classpath
@@ -114,7 +116,7 @@ public class RootLoaderRef extends MatchingTask {
     public void setClasspathRef(Reference r) {
         createClasspath().setRefid(r);
     }
-    
+
     /**
      * Adds a path to the classpath.
      * @return a class path to be configured

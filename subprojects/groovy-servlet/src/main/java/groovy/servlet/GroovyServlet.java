@@ -51,16 +51,16 @@ import org.codehaus.groovy.runtime.GroovyCategorySupport;
  * web.xml entry:
  *
  * <pre>
- *    &lt;servlet>
- *      &lt;servlet-name>Groovy&lt;/servlet-name>
- *      &lt;servlet-class>groovy.servlet.GroovyServlet&lt;/servlet-class>
- *    &lt;/servlet>
+ *    &lt;servlet&gt;
+ *      &lt;servlet-name&gt;Groovy&lt;/servlet-name&gt;
+ *      &lt;servlet-class&gt;groovy.servlet.GroovyServlet&lt;/servlet-class&gt;
+ *    &lt;/servlet&gt;
  *
- *    &lt;servlet-mapping>
- *      &lt;servlet-name>Groovy&lt;/servlet-name>
- *      &lt;url-pattern>*.groovy&lt;/url-pattern>
- *      &lt;url-pattern>*.gdo&lt;/url-pattern>
- *    &lt;/servlet-mapping>
+ *    &lt;servlet-mapping&gt;
+ *      &lt;servlet-name&gt;Groovy&lt;/servlet-name&gt;
+ *      &lt;url-pattern&gt;*.groovy&lt;/url-pattern&gt;
+ *      &lt;url-pattern&gt;*.gdo&lt;/url-pattern&gt;
+ *    &lt;/servlet-mapping&gt;
  * </pre>
  *
  * <p>The URL pattern does not require the "*.groovy" mapping.  You can, for

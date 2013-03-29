@@ -32,7 +32,7 @@ import java.util.Iterator;
  * Example:
  * <pre>new MarkupBuilder().root {
  *   a( a1:'one' ) {
- *     b { mkp.yield( '3 < 5' ) }
+ *     b { mkp.yield( '3 &lt; 5' ) }
  *     c( a2:'two', 'blah' )
  *   }
  * }</pre>
@@ -49,7 +49,7 @@ import java.util.Iterator;
  * away from the normal building mode of the builder and get access
  * to helper markup methods such as 'yield' and 'yieldUnescaped'.
  * See the javadoc for {@link #getMkp()} for further details.</li>
- *     <li>Note that tab, newline and carriage return characters are escaped within attributes, i.e. will become &#09;, &#10; and &#13; respectively</li>
+ *     <li>Note that tab, newline and carriage return characters are escaped within attributes, i.e. will become &amp;#09;, &amp;#10; and &amp;#13; respectively</li>
  * </ul>
  * @author <a href="mailto:james@coredevelopers.net">James Strachan</a>
  * @author Stefan Matthias Aust
@@ -78,9 +78,9 @@ public class MarkupBuilder extends BuilderSupport {
     }
 
     /**
-     * Defaults to true.&#160;If set to false then you must escape any special
+     * Defaults to true.&amp;#160;If set to false then you must escape any special
      * characters within attribute values such as '&amp;', '&lt;', CR/LF, single
-     * and double quotes etc.&#160;manually as needed. The builder will not guard
+     * and double quotes etc.&amp;#160;manually as needed. The builder will not guard
      * against producing invalid XML when in this mode and the output may not
      * be able to be parsed/round-tripped but it does give you full control when
      * producing for instance HTML output.
@@ -207,7 +207,7 @@ public class MarkupBuilder extends BuilderSupport {
     }
 
     /**
-     * Whether empty elements are expanded from <tagName/> to <tagName></tagName>.
+     * Whether empty elements are expanded from &lt;tagName/&gt; to &lt;tagName&gt;&lt;/tagName&gt;.
      *
      * @param expandEmptyElements if <code>true</code>, empty
      *                            elements will be represented by an opening tag
@@ -336,7 +336,7 @@ public class MarkupBuilder extends BuilderSupport {
     protected Object getName(String methodName) {
         return super.getName(methodName);
     }
-    
+
     /**
      * Escapes a string so that it can be used directly as an XML
      * attribute value.

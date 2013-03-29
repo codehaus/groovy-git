@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
  *     int age
  *     Date since
  *     Collection favItems = ['Food']
- *     def object 
+ *     def object
  * }
  * def d = new Date()
  * def anyObject = new Object()
@@ -46,10 +46,10 @@ import java.lang.annotation.Target;
  * <pre>
  * def c3 = new Customer(last: 'Jones', age: 21)
  * def c4 = new Customer('Tom', 'Jones')
- * 
+ *
  * assert null == c3.since
  * assert 0 == c4.age
- * assert c3.favItems == ['Food'] && c4.favItems == ['Food']
+ * assert c3.favItems == ['Food'] &amp;&amp; c4.favItems == ['Food']
  * </pre>
  *
  * The {@code @Canonical} annotation instructs the compiler to execute an
@@ -110,6 +110,8 @@ public @interface Canonical {
      * If the {@code @Canonical} behavior is customised by using it in conjunction with one of the more specific
      * related annotations (i.e. {@code @ToString}, {@code @EqualsAndHashCode} or {@code @TupleConstructor}), then
      * the value of this attribute can be overriden within the more specific annotation.
+     *
+     * @return an array of {@code String}s.
      */
     String[] excludes() default {};
 
@@ -121,6 +123,8 @@ public @interface Canonical {
      * If the {@code @Canonical} behavior is customised by using it in conjunction with one of the more specific
      * related annotations (i.e. {@code @ToString}, {@code @EqualsAndHashCode} or {@code @TupleConstructor}), then
      * the value of this attribute can be overriden within the more specific annotation.
+     *
+     * @return an array of {@code String}s.
      */
     String[] includes() default {};
 }

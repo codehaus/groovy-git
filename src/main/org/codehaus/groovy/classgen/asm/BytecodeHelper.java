@@ -33,7 +33,7 @@ import java.lang.reflect.Modifier;
  * @version $Revision$
  */
 public class BytecodeHelper implements Opcodes {
-    
+
     private static String DTT_CLASSNAME = BytecodeHelper.getClassInternalName(DefaultTypeTransformation.class.getName());
 
     public static String getClassInternalName(ClassNode t) {
@@ -74,7 +74,7 @@ public class BytecodeHelper implements Opcodes {
     public static String getMethodDescriptor(MethodNode methodNode) {
         return getMethodDescriptor(methodNode.getReturnType(), methodNode.getParameters());
     }
-    
+
     /**
      * @return the ASM method type descriptor
      */
@@ -229,9 +229,9 @@ public class BytecodeHelper implements Opcodes {
                 }
         }
     }
-    
+
     /**
-     * negate a boolean on stack. true->false, false->true
+     * negate a boolean on stack. true&rarr;false, false&rarr;true
      */
     public static void negateBoolean(MethodVisitor mv) {
         // code to negate the primitive boolean
@@ -517,7 +517,7 @@ public class BytecodeHelper implements Opcodes {
             mv.visitVarInsn(ALOAD, idx);
         }
     }
-    
+
 
     public static void doCast(MethodVisitor mv, ClassNode type) {
         if (type == ClassHelper.OBJECT_TYPE) return;
@@ -526,8 +526,8 @@ public class BytecodeHelper implements Opcodes {
         } else {
             mv.visitTypeInsn(
                     CHECKCAST,
-                    type.isArray() ? 
-                            BytecodeHelper.getTypeDescription(type) : 
+                    type.isArray() ?
+                            BytecodeHelper.getTypeDescription(type) :
                             BytecodeHelper.getClassInternalName(type.getName()));
         }
     }
@@ -573,8 +573,8 @@ public class BytecodeHelper implements Opcodes {
         } else {
             mv.visitTypeInsn(
                     CHECKCAST,
-                    type.isArray() ? 
-                            BytecodeHelper.getTypeDescription(type) : 
+                    type.isArray() ?
+                            BytecodeHelper.getTypeDescription(type) :
                                 BytecodeHelper.getClassInternalName(type.getName()));
         }
     }
@@ -606,7 +606,7 @@ public class BytecodeHelper implements Opcodes {
         return box(mv, type.getTypeClass());
     }
 
-    
+
     /**
      * Generates the bytecode to autobox the current value on the stack
      */

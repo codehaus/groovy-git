@@ -456,6 +456,8 @@ public class Groovyc extends MatchingTask {
     /**
      * Enable verbose compiling which will display which files
      * are being compiled. Default is false.
+     *
+     * @param verbose whether to be verbose or not.
      */
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
@@ -605,6 +607,8 @@ public class Groovyc extends MatchingTask {
 
     /**
      * Add the configured nested javac task if present to initiate joint compilation.
+     *
+     *  @param javac the {@code Javac} to use.
      */
     public void addConfiguredJavac(final Javac javac) {
         this.javac = javac;
@@ -614,6 +618,8 @@ public class Groovyc extends MatchingTask {
     /**
      * Enable compiler to report stack trace information if a problem occurs
      * during compilation. Default is false.
+     *
+     * @param stacktrace whether to report stack traces or not.
      */
     public void setStacktrace(boolean stacktrace) {
         this.stacktrace = stacktrace;

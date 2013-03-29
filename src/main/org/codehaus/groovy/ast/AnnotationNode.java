@@ -24,7 +24,7 @@ import org.codehaus.groovy.GroovyBugError;
 
 /**
  * Represents an annotation which can be attached to interfaces, classes, methods and fields.
- * 
+ *
  * @author <a href="mailto:jstrachan@protique.com">James Strachan</a>
  * @author <a href='mailto:the[dot]mindstorm[at]gmail[dot]com'>Alex Popescu</a>
  * @version $Revision$
@@ -40,7 +40,7 @@ public class AnnotationNode extends ASTNode {
     public static final int PACKAGE_TARGET = 1 << 7;
     private static final int ALL_TARGETS = TYPE_TARGET | CONSTRUCTOR_TARGET | METHOD_TARGET
         | FIELD_TARGET | PARAMETER_TARGET | LOCAL_VARIABLE_TARGET | ANNOTATION_TARGET | PACKAGE_TARGET;
-    
+
     private final ClassNode classNode;
     private Map<String, Expression> members = new HashMap<String, Expression>();
     private boolean runtimeRetention= false, sourceRetention= false, classRetention = false;
@@ -57,7 +57,7 @@ public class AnnotationNode extends ASTNode {
     public Map<String, Expression> getMembers() {
         return members;
     }
-    
+
     public Expression getMember(String name) {
         return members.get(name);
     }
@@ -75,14 +75,14 @@ public class AnnotationNode extends ASTNode {
     public void setMember(String name, Expression value) {
         members.put(name, value);
     }
-    
+
     public boolean isBuiltIn(){
         return false;
     }
 
     /**
      * Flag corresponding to <code>RetentionPolicy</code>.
-     * @return <tt>true</tt> if the annotation should be visible at runtime, 
+     * @return <tt>true</tt> if the annotation should be visible at runtime,
      *      <tt>false</tt> otherwise
      */
     public boolean hasRuntimeRetention() {
@@ -91,7 +91,7 @@ public class AnnotationNode extends ASTNode {
 
     /**
      * Sets the internal flag of this annotation runtime retention policy.
-     * If the current annotation has 
+     * If the current annotation has
      * <code>RetentionPolicy.RUNTIME</code> or if <tt>false</tt>
      * if the <code>RetentionPolicy.CLASS</code>.
      * @param flag if <tt>true</tt> then current annotation is marked as having
@@ -101,10 +101,10 @@ public class AnnotationNode extends ASTNode {
     public void setRuntimeRetention(boolean flag) {
         this.runtimeRetention = flag;
     }
-    
+
     /**
      * Flag corresponding to <code>RetentionPolicy.SOURCE</code>.
-     * @return <tt>true</tt> if the annotation is only allowed in sources 
+     * @return <tt>true</tt> if the annotation is only allowed in sources
      *      <tt>false</tt> otherwise
      */
     public boolean hasSourceRetention() {
@@ -112,9 +112,11 @@ public class AnnotationNode extends ASTNode {
         return this.sourceRetention;
     }
 
-    /** Sets the internal flag if the current annotation has 
+    /** Sets the internal flag if the current annotation has
      * <code>RetentionPolicy.SOURCE</code>.
-     */ 
+     *
+     * @param flag value to set.
+     */
     public void setSourceRetention(boolean flag) {
         this.sourceRetention = flag;
     }
@@ -131,6 +133,8 @@ public class AnnotationNode extends ASTNode {
 
     /** Sets the internal flag if the current annotation has
      * <code>RetentionPolicy.CLASS</code>.
+     *
+     * @param flag the value to set.
      */
     public void setClassRetention(boolean flag) {
         this.classRetention = flag;
@@ -139,11 +143,11 @@ public class AnnotationNode extends ASTNode {
     public void setAllowedTargets(int bitmap) {
         this.allowedTargets = bitmap;
     }
-    
+
     public boolean isTargetAllowed(int target) {
         return (this.allowedTargets & target) == target;
     }
-    
+
     public static String targetToName(int target) {
         switch(target) {
             case TYPE_TARGET:

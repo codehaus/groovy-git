@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2012 the original author or authors.
+ * Copyright 2003-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,9 @@ import java.util.Map;
  * <pre>
  * def db = // an instance of groovy.sql.Sql
  * def sql = '''select * from Person
- *     where (purchaseCount > ? and birthMonth = ?)
- *     and (lastName &lt; ? or lastName > ?)
- *     and age &lt; ? and age > ? and firstName != ?
+ *     where (purchaseCount &gt; ? and birthMonth = ?)
+ *     and (lastName &lt; ? or lastName &gt; ?)
+ *     and age &lt; ? and age &gt; ? and firstName != ?
  *     order by firstName DESC, age'''
  * def params = [10, "January", "Zulu", "Alpha", 99, 5, "Bert"]
  * def sortedPeopleOfInterest = db.rows(sql, params)
@@ -46,11 +46,11 @@ import java.util.Map;
  * You can write code like this:
  * <pre>
  * def person = new DataSet(db, 'Person') // or db.dataSet('Person'), or db.dataSet(Person)
- * def janFrequentBuyers = person.findAll { it.purchaseCount > 10 && it.lastName == "January" }
+ * def janFrequentBuyers = person.findAll { it.purchaseCount &gt; 10 &amp;&amp; it.lastName == "January" }
  * def sortedPeopleOfInterest = janFrequentBuyers.
- *     findAll{ it.lastName &lt; 'Zulu' || it.lastName > 'Alpha' }.
+ *     findAll{ it.lastName &lt; 'Zulu' || it.lastName &gt; 'Alpha' }.
  *     findAll{ it.age &lt; 99 }.
- *     findAll{ it.age > 5 }.
+ *     findAll{ it.age &gt; 5 }.
  *     sort{ it.firstName }.reverse().
  *     findAll{ it.firstName != 'Bert' }.
  *     sort{ it.age }

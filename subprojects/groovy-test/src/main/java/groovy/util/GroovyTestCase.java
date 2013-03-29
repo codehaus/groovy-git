@@ -271,7 +271,7 @@ public class GroovyTestCase extends TestCase {
      * The purpose of providing a 'static' version is such that you can use the
      * feature even if not subclassing GroovyTestCase.
      *
-     * @return <false> when not itself already in the call stack
+     * @return {@code false} when not itself already in the call stack
      */
     public static boolean notYetImplemented(TestCase caller) {
         if (notYetImplementedFlag.get() != null) {
@@ -299,7 +299,7 @@ public class GroovyTestCase extends TestCase {
      * Convenience method for subclasses of GroovyTestCase, identical to
      * <pre> GroovyTestCase.notYetImplemented(this); </pre>.
      *
-     * @return <false> when not itself already in the call stack
+     * @return {@code false} when not itself already in the call stack
      * @see #notYetImplemented(junit.framework.TestCase)
      */
     public boolean notYetImplemented() {

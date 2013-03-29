@@ -90,7 +90,7 @@ import java.lang.annotation.Target;
  *
  * def words = ["The", "quick", "brown", "fox"]
  * println new Sentence(words).shuffle()
- * // => [quick, fox, The, brown]       (order will vary)
+ * // =&gt; [quick, fox, The, brown]       (order will vary)
  * </pre>
  * Or, instead of using {@code @Mixin}, try "mixing in" your methods at runtime:
  * <pre>

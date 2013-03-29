@@ -26,29 +26,29 @@ import java.util.List;
  * <p>
  * Typical usages:
  * <pre>
- * def twice = { a -> a * 2 }
- * def inc = { b -> b + 1 }
- * def f = { x -> twice(inc(x)) } // longhand
- * def g = inc >> twice
- * def h = twice << inc
+ * def twice = { a -&gt; a * 2 }
+ * def inc = { b -&gt; b + 1 }
+ * def f = { x -&gt; twice(inc(x)) } // longhand
+ * def g = inc &gt;&gt; twice
+ * def h = twice &lt;&lt; inc
  * assert f(10) == 22
  * assert g(10) == 22
  * assert h(10) == 22
  *
  * def s2c = { it.chars[0] }
- * def p = Integer.&toHexString >> s2c >> Character.&toUpperCase
+ * def p = Integer.&amp;toHexString &gt;&gt; s2c &gt;&gt; Character.&amp;toUpperCase
  * assert p(15) == 'F'
  *
- * def multiply = { a, b -> a * b }
- * def identity = { a -> [a, a] }
- * def sq = identity >> multiply
+ * def multiply = { a, b -&gt; a * b }
+ * def identity = { a -&gt; [a, a] }
+ * def sq = identity &gt;&gt; multiply
  * assert (1..5).collect{ sq(it) } == [1, 4, 9, 16, 25]
  *
- * def add3 = { a, b, c -> a + b + c }
+ * def add3 = { a, b, c -&gt; a + b + c }
  * def add2plus10 = add3.curry(10)
- * def multBoth = { a, b, c -> [a*c, b*c] }
+ * def multBoth = { a, b, c -&gt; [a*c, b*c] }
  * def twiceBoth = multBoth.rcurry(2)
- * def twiceBothPlus10 = twiceBoth >> add2plus10
+ * def twiceBothPlus10 = twiceBoth &gt;&gt; add2plus10
  * assert twiceBothPlus10(5, 10) == 40
  * </pre>
  *

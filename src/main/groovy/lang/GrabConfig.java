@@ -51,13 +51,13 @@ import java.lang.annotation.Target;
  *                      position:'Resistance Leader')
  *
  * // write out to XML file
- * new File("john.xml").withOutputStream { out ->
+ * new File("john.xml").withOutputStream { out -&gt;
  *     xstream.toXML(john1, out)
  * }
  *
  * // now read back in
  * def john2
- * new File("john.xml").withInputStream { ins ->
+ * new File("john.xml").withInputStream { ins -&gt;
  *     john2 = xstream.fromXML(ins)
  * }
  *

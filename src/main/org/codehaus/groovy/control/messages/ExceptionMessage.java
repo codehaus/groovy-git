@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,59 +21,47 @@ import java.io.PrintWriter;
 import org.codehaus.groovy.control.Janitor;
 import org.codehaus.groovy.control.ProcessingUnit;
 
-
-
 /**
  *  A class for error messages produced by the parser system.
  *
  *  @author <a href="mailto:cpoirier@dreaming.org">Chris Poirier</a>
- *
- *  @version $Id$
  */
-
-public class ExceptionMessage extends Message
-{
+public class ExceptionMessage extends Message {
     protected boolean verbose = true;
 
     private Exception cause = null;   // The exception source of the message, if any
     ProcessingUnit owner = null;
 
-    public ExceptionMessage( Exception cause, boolean v, ProcessingUnit owner )
-    {
+    public ExceptionMessage(Exception cause, boolean v, ProcessingUnit owner) {
         this.verbose = v;
         this.cause = cause;
         this.owner = owner;
     }
-    
-    
-   
+
    /**
     *  Returns the underlying Exception.
+    *
+    * @return the underlying exception.
     */
-
-    public Exception getCause()
-    {
+    public Exception getCause() {
         return this.cause;
     }
-    
-
 
    /**
-    *  Writes out a nicely formatted summary of the exception. 
+    *  Writes out a nicely formatted summary of the exception.
+    *
+    * @param output the {@code PrintWriter} to write to.
+    * @param janitor
     */
-    
-    public void write( PrintWriter output, Janitor janitor )
-    {
-        String description = "General error during " + owner.getPhaseDescription() + ": "; 
-        
+    public void write(PrintWriter output, Janitor janitor) {
+        String description = "General error during " + owner.getPhaseDescription() + ": ";
+
         String message = cause.getMessage();
-        if( message != null )
-        {
-            output.println( description + message );
+        if( message != null ) {
+            output.println(description + message);
         }
-        else
-        {
-            output.println( description + cause );
+        else {
+            output.println(description + cause);
         }
         output.println();
 
@@ -81,8 +69,5 @@ public class ExceptionMessage extends Message
             cause.printStackTrace(output);
         //}
     }
-    
+
 }
-
-
-

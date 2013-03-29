@@ -46,7 +46,7 @@ import java.lang.annotation.Target;
  * def js = new PersonAge('John', 'Smith')
  * js.age = 25
  * println "$js.last, $js.first is $js.age years old"
- * // => SMITH, John is 25 years old
+ * // =&gt; SMITH, John is 25 years old
  * </pre>
  * for this case, the <code>PersonAge</code> class will be
  * equivalent to the following code:

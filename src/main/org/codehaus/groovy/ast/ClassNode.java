@@ -49,35 +49,35 @@ import java.util.*;
  * <ol>
  * <li> Primary ClassNodes:<br>
  * A primary ClassNode is one where we have a source representation
- * which is to be compiled by Groovy and which we have an AST for. 
+ * which is to be compiled by Groovy and which we have an AST for.
  * The groovy compiler will output one class for each such ClassNode
  * that passes through AsmBytecodeGenerator... not more, not less.
  * That means for example Closures become such ClassNodes too at
- * some point. 
+ * some point.
  * <li> ClassNodes create through different sources (typically created
  * from a java.lang.reflect.Class object):<br>
  * The compiler will not output classes from these, the methods
  * usually do not contain bodies. These kind of ClassNodes will be
- * used in different checks, but not checks that work on the method 
+ * used in different checks, but not checks that work on the method
  * bodies. For example if such a ClassNode is a super class to a primary
- * ClassNode, then the abstract method test and others will be done 
- * with data based on these. Theoretically it is also possible to mix both 
+ * ClassNode, then the abstract method test and others will be done
+ * with data based on these. Theoretically it is also possible to mix both
  * (1 and 2) kind of classes in a hierarchy, but this probably works only
  *  in the newest Groovy versions. Such ClassNodes normally have to
- *  isResolved() returning true without having a redirect.In the Groovy 
- *  compiler the only version of this, that exists, is a ClassNode created 
+ *  isResolved() returning true without having a redirect.In the Groovy
+ *  compiler the only version of this, that exists, is a ClassNode created
  *  through a Class instance
  * <li> Labels:<br>
- * ClassNodes created through ClassHelper.makeWithoutCaching. They 
+ * ClassNodes created through ClassHelper.makeWithoutCaching. They
  * are place holders, its redirect points to the real structure, which can
  * be a label too, but following all redirects it should end with a ClassNode
- * from one of the other two categories. If ResolveVisitor finds such a 
- * node, it tries to set the redirects. Any such label created after 
- * ResolveVisitor has done its work needs to have a redirect pointing to 
- * case 1 or 2. If not the compiler may react strange... this can be considered 
- * as a kind of dangling pointer. 
+ * from one of the other two categories. If ResolveVisitor finds such a
+ * node, it tries to set the redirects. Any such label created after
+ * ResolveVisitor has done its work needs to have a redirect pointing to
+ * case 1 or 2. If not the compiler may react strange... this can be considered
+ * as a kind of dangling pointer.
  * </ol>
- * <b>Note:</b> the redirect mechanism is only allowed for classes 
+ * <b>Note:</b> the redirect mechanism is only allowed for classes
  * that are not primary ClassNodes. Typically this is done for classes
  * created by name only.  The redirect itself can be any type of ClassNode.
  * <p>
@@ -222,7 +222,7 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
         isPrimaryNode=false;
     }
 
-    /*
+  /**
      * Constructor used by makeArray() if a real class is available
      */
     private ClassNode(Class c, ClassNode componentType) {
@@ -232,8 +232,10 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
     }
 
     /**
-     * Creates a ClassNode from a real class. The resulting
-     * ClassNode will not be a primary ClassNode.
+     * Creates a {@code ClassNode} from a real class. The resulting
+     * {@code ClassNode} will not be a primary {@code ClassNode}.
+     *
+     * @param c the {@code Class} to create a {@code ClassNode} for.
      */
     public ClassNode(Class c) {
         this(c.getName(), c.getModifiers(), null, null ,MixinNode.EMPTY_ARRAY);
@@ -253,7 +255,7 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
             if (redirect!=null) {
                 throw new GroovyBugError("lazyClassInit called on a proxy ClassNode, that must not happen."+
                                          "A redirect() call is missing somewhere!");
-            }   
+            }
             if (lazyInitDone) return;
             VMPluginFactory.getPlugin().configureClassNode(compileUnit,this);
             lazyInitDone = true;
@@ -390,7 +392,7 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
                 result.add(method);
             }
         }
-        
+
         if (result.isEmpty()) {
             return null;
         } else {
@@ -594,6 +596,14 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
      * default method adding like getProperty() or invokeMethod() where there may already
      * be a method defined in a class and so the default implementations should not be added
      * if already present.
+     *
+     * @param name the method name.
+     * @param modifiers the method modifiers.
+     * @param returnType the method return type.
+     * @param parameters the parameters of the method.
+     * @param exceptions the exceptions thrown by the method
+     * @param code the code.
+     * @return the {@code MethodNode}
      */
     public MethodNode addMethod(String name,
                                 int modifiers,
@@ -613,6 +623,10 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
 
     /**
      * @see #getDeclaredMethod(String, Parameter[])
+     *
+     * @param name the method name.
+     * @param parameters the method parameters.
+     * @return whther the method exists.
      */
     public boolean hasDeclaredMethod(String name, Parameter[] parameters) {
         MethodNode other = getDeclaredMethod(name, parameters);
@@ -621,6 +635,10 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
 
     /**
      * @see #getMethod(String, Parameter[])
+     *
+     * @param name the method name.
+     * @param parameters the method parameters.
+     * @return whther the method exists.
      */
     public boolean hasMethod(String name, Parameter[] parameters) {
         MethodNode other = getMethod(name, parameters);
@@ -629,6 +647,14 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
 
     /**
      * Adds a synthetic method as part of the compilation process
+     *
+     * @param name the method name.
+     * @param modifiers the method modifiers.
+     * @param returnType the method return type.
+     * @param parameters the parameters of the method.
+     * @param exceptions the exceptions thrown by the method
+     * @param code the code.
+     * @return the {@code MethodNode}
      */
     public MethodNode addSyntheticMethod(String name,
                                          int modifiers,
@@ -774,7 +800,7 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
         }
         return method;
     }
-    
+
     public void addStaticInitializerStatements(List<Statement> staticStatements, boolean fieldInit) {
         MethodNode method = getOrAddStaticConstructorNode();
         BlockStatement block = null;
@@ -833,7 +859,9 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
 
     /**
      * This methods returns a list of all methods of the given name
-     * defined in the current class
+     * defined in the current class.
+     *
+     * @param name the method name.
      * @return the method list
      * @see #getMethods(String)
      */
@@ -846,6 +874,8 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
     /**
      * This methods creates a list of all methods with this name of the
      * current class and of all super classes
+     *
+     * @param name the method name.
      * @return the methods list
      * @see #getDeclaredMethods(String)
      */
@@ -862,6 +892,8 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
     /**
      * Finds a method matching the given name and parameters in this class.
      *
+     * @param name the method name.
+     * @param parameters the method parameters.
      * @return the method matching the given name and parameters or null
      */
     public MethodNode getDeclaredMethod(String name, Parameter[] parameters) {
@@ -877,6 +909,8 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
      * Finds a method matching the given name and parameters in this class
      * or any parent class.
      *
+     * @param name the method name.
+     * @param parameters the method parameters.
      * @return the method matching the given name and parameters or null
      */
     public MethodNode getMethod(String name, Parameter[] parameters) {
@@ -935,12 +969,10 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
      * @param classNode the class node for the interface
      * @return true if this class declares that it implements the given interface
      * or if one of its interfaces extends directly or indirectly the interface
-     *
-     * NOTE: Doesn't consider an interface to implement itself.
-     * I think this is intended to be called on ClassNodes representing
-     * classes, not interfaces.
-     * 
      */
+     // NOTE: Doesn't consider an interface to implement itself.
+     // I think this is intended to be called on ClassNodes representing
+     // classes, not interfaces.
     public boolean declaresInterface(ClassNode classNode) {
         ClassNode[] interfaces = redirect().getInterfaces();
         for (ClassNode cn : interfaces) {
@@ -1088,6 +1120,8 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
 
     /**
      * Is this class declared in a static method (such as a closure / inner class declared in a static method)
+     *
+     * @return whether this class is static.
      */
     public boolean isStaticClass() {
         return redirect().staticClass;
@@ -1138,11 +1172,12 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
     }
 
     /**
-     * This exists to avoid a recursive definition of toString. The default toString
-     * in GenericsType calls ClassNode.toString(), which calls GenericsType.toString(), etc. 
+     * This exists to avoid a recursive definition of toString. The default {@code toString}
+     * in {@code GenericsType} calls {@code ClassNode.toString()}, which calls {@code GenericsType.toString()}, etc.
+     *
      * @param genericsType
      * @param showRedirect
-     * @return
+     * @return stringyfied result.
      */
     private String genericTypeAsString(GenericsType genericsType, boolean showRedirect) {
         String ret = genericsType.getName();
@@ -1264,17 +1299,17 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
         } else if (arguments instanceof MapExpression) {
             count = 1;
         }
-        
+
         for (MethodNode method : getMethods(name)) {
             if(method.isStatic()) {
-                Parameter[] parameters = method.getParameters(); 
+                Parameter[] parameters = method.getParameters();
                 if (parameters.length == count) return true;
 
                 // handle varargs case
                 if (parameters.length > 0 && parameters[parameters.length - 1].getType().isArray()) {
                     if (count >= parameters.length - 1) return true;
                 }
-                
+
                 // handle parameters with default values
                 int nonDefaultParameters = 0;
                 for (Parameter parameter : parameters) {
@@ -1312,6 +1347,7 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
      * is inherently unsafe as it may return null depending on the compile phase you are
      * using. AST transformations should never use this method directly, but rather obtain
      * a new class node using {@link #getPlainNodeReference()}.
+     *
      * @return the class this classnode relates to. May return null.
      */
     public Class getTypeClass(){
@@ -1418,7 +1454,7 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
         final Map<String,FieldNode> index = r.fieldIndex;
         index.put(newName, index.remove(oldName));
     }
-    
+
     public void removeField(String oldName) {
         ClassNode r = redirect ();
         if (r.fieldIndex == null)
@@ -1448,7 +1484,7 @@ public class ClassNode extends AnnotatedNode implements Opcodes {
         }
         return transformInstances;
     }
-    
+
     public boolean isRedirectNode() {
         return redirect!=null;
     }

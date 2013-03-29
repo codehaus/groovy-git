@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,11 +33,11 @@ import java.util.regex.Pattern;
 import java.lang.ref.SoftReference;
 
 /**
- * This class is a Helper for ClassNode and classes handling ClassNodes.
- * It does contain a set of predefined ClassNodes for the most used 
- * types and some code for cached ClassNode creation and basic 
- * ClassNode handling 
- * 
+ * This class is a helper for {@code ClassNode} and classes handling {@code ClassNode}s.
+ * It does contain a set of predefined {@code ClassNode}s for the most used
+ * types and some code for cached {@code ClassNode} creation and basic
+ * {@code ClassNode} handling
+ *
  * @author Jochen Theodorou
  */
 public class ClassHelper {
@@ -46,26 +46,26 @@ public class ClassHelper {
         Object.class, Boolean.TYPE, Character.TYPE, Byte.TYPE, Short.TYPE,
         Integer.TYPE, Long.TYPE, Double.TYPE, Float.TYPE, Void.TYPE,
         Closure.class, GString.class, List.class, Map.class, Range.class,
-        Pattern.class, Script.class, String.class,  Boolean.class, 
+        Pattern.class, Script.class, String.class,  Boolean.class,
         Character.class, Byte.class, Short.class, Integer.class, Long.class,
-        Double.class, Float.class, BigDecimal.class, BigInteger.class, 
-        Number.class, Void.class, Reference.class, Class.class, MetaClass.class, 
+        Double.class, Float.class, BigDecimal.class, BigInteger.class,
+        Number.class, Void.class, Reference.class, Class.class, MetaClass.class,
         Iterator.class, GeneratedClosure.class, GroovyObjectSupport.class
     };
 
     private static final String[] primitiveClassNames = new String[] {
-        "", "boolean", "char", "byte", "short", 
+        "", "boolean", "char", "byte", "short",
         "int", "long", "double", "float", "void"
     };
-    
-    public static final ClassNode 
+
+    public static final ClassNode
         DYNAMIC_TYPE = makeCached(Object.class),  OBJECT_TYPE = DYNAMIC_TYPE,
         VOID_TYPE = makeCached(Void.TYPE),        CLOSURE_TYPE = makeCached(Closure.class),
         GSTRING_TYPE = makeCached(GString.class), LIST_TYPE = makeWithoutCaching(List.class),
         MAP_TYPE = makeWithoutCaching(Map.class), RANGE_TYPE = makeCached(Range.class),
         PATTERN_TYPE = makeCached(Pattern.class), STRING_TYPE = makeCached(String.class),
         SCRIPT_TYPE = makeCached(Script.class),   REFERENCE_TYPE = makeWithoutCaching(Reference.class),
-        
+
         boolean_TYPE = makeCached(boolean.class),     char_TYPE = makeCached(char.class),
         byte_TYPE = makeCached(byte.class),           int_TYPE = makeCached(int.class),
         long_TYPE = makeCached(long.class),           short_TYPE = makeCached(short.class),
@@ -77,28 +77,28 @@ public class ClassHelper {
         BigInteger_TYPE =  makeCached(java.math.BigInteger.class),
         BigDecimal_TYPE = makeCached(java.math.BigDecimal.class),
         Number_TYPE = makeCached(Number.class),
-        
+
         void_WRAPPER_TYPE = makeCached(Void.class),   METACLASS_TYPE = makeCached(MetaClass.class),
         Iterator_TYPE = makeCached(Iterator.class),
 
         // uncached constants.
-        CLASS_Type = makeWithoutCaching(Class.class), COMPARABLE_TYPE = makeWithoutCaching(Comparable.class),        
+        CLASS_Type = makeWithoutCaching(Class.class), COMPARABLE_TYPE = makeWithoutCaching(Comparable.class),
         GENERATED_CLOSURE_Type = makeWithoutCaching(GeneratedClosure.class),
         GROOVY_OBJECT_SUPPORT_TYPE = makeWithoutCaching(GroovyObjectSupport.class),
         GROOVY_OBJECT_TYPE = makeWithoutCaching(GroovyObject.class),
         GROOVY_INTERCEPTABLE_TYPE = makeWithoutCaching(GroovyInterceptable.class),
-        
+
         Enum_Type = new ClassNode("java.lang.Enum",0,OBJECT_TYPE),
         Annotation_TYPE = new ClassNode("java.lang.annotation.Annotation",0,OBJECT_TYPE),
         ELEMENT_TYPE_TYPE = new ClassNode("java.lang.annotation.ElementType",0,Enum_Type)
         ;
-        
-        
+
+
     static {
         Enum_Type.isPrimaryNode = false;
         Annotation_TYPE.isPrimaryNode = false;
     }
-    
+
     private static ClassNode[] types = new ClassNode[] {
         OBJECT_TYPE,
         boolean_TYPE, char_TYPE, byte_TYPE, short_TYPE,
@@ -110,12 +110,12 @@ public class ClassHelper {
         Double_TYPE, Float_TYPE, BigDecimal_TYPE, BigInteger_TYPE,
         Number_TYPE,
         void_WRAPPER_TYPE, REFERENCE_TYPE, CLASS_Type, METACLASS_TYPE,
-        Iterator_TYPE, GENERATED_CLOSURE_Type, GROOVY_OBJECT_SUPPORT_TYPE, 
+        Iterator_TYPE, GENERATED_CLOSURE_Type, GROOVY_OBJECT_SUPPORT_TYPE,
         GROOVY_OBJECT_TYPE, GROOVY_INTERCEPTABLE_TYPE, Enum_Type, Annotation_TYPE
     };
 
     protected static final ClassNode[] EMPTY_TYPE_ARRAY = {};
-    
+
     public static final String OBJECT = "java.lang.Object";
 
     public static ClassNode makeCached(Class c){
@@ -130,36 +130,36 @@ public class ClassHelper {
 
         return classNode;
     }
-    
+
     /**
-     * Creates an array of ClassNodes using an array of classes.
-     * For each of the given classes a new ClassNode will be 
+     * Creates an array of {@code ClassNode}s using an array of classes.
+     * For each of the given classes a new {@code ClassNode} will be
      * created
      * @see #make(Class)
-     * @param classes an array of classes used to create the ClassNodes
-     * @return an array of ClassNodes
+     * @param classes an array of classes used to create the {@code ClassNode}s
+     * @return an array of {@code ClassNode}s
      */
     public static ClassNode[] make(Class[] classes) {
         ClassNode[] cns = new ClassNode[classes.length];
         for (int i=0; i<cns.length; i++) {
             cns[i] = make(classes[i]);
         }
-        
+
         return cns;
     }
-    
+
     /**
-     * Creates a ClassNode using a given class.
-     * A new ClassNode object is only created if the class
+     * Creates a {@code ClassNode} using a given class.
+     * A new {@code ClassNode} object is only created if the class
      * is not one of the predefined ones
-     * 
-     * @param c class used to created the ClassNode
-     * @return ClassNode instance created from the given class
+     *
+     * @param c class used to created the {@code ClassNode}
+     * @return {@code ClassNode} instance created from the given class
      */
     public static ClassNode make(Class c) {
         return make(c,true);
     }
-    
+
     public static ClassNode make(Class c, boolean includeGenerics) {
         for (int i=0; i<classes.length; i++) {
             if (c==classes[i]) return types[i];
@@ -170,11 +170,11 @@ public class ClassHelper {
         }
         return makeWithoutCaching(c,includeGenerics);
     }
-    
+
     public static ClassNode makeWithoutCaching(Class c){
         return makeWithoutCaching(c,true);
     }
-    
+
     public static ClassNode makeWithoutCaching(Class c, boolean includeGenerics){
         if (c.isArray()) {
             ClassNode cn = makeWithoutCaching(c.getComponentType(),includeGenerics);
@@ -191,61 +191,64 @@ public class ClassHelper {
             return t;
         }
     }
-    
-    
+
+
     /**
-     * Creates a ClassNode using a given class.
+     * Creates a {@code ClassNode} using a given class.
      * Unlike make(String) this method will not use the cache
-     * to create the ClassNode. This means the ClassNode created
+     * to create the {@code ClassNode}. This means the {@code ClassNode} created
      * from this method using the same name will have a different
      * reference
-     * 
+     *
      * @see #make(String)
-     * @param name of the class the ClassNode is representing
+     * @param name of the class the {@code ClassNode} is representing
      */
-    public static ClassNode makeWithoutCaching(String name) { 
+    public static ClassNode makeWithoutCaching(String name) {
         ClassNode cn = new ClassNode(name,Opcodes.ACC_PUBLIC,OBJECT_TYPE);
         cn.isPrimaryNode = false;
         return cn;
     }
-    
-    /**     * Creates a ClassNode using a given class.
-     * If the name is one of the predefined ClassNodes then the 
-     * corresponding ClassNode instance will be returned. If the
+
+    /**
+     * Creates a {@code ClassNode} using a given class.
+     * If the name is one of the predefined {@code ClassNode}s then the
+     * corresponding {@code ClassNode} instance will be returned. If the
      * name is null or of length 0 the dynamic type is returned
-     * 
-     * @param name of the class the ClassNode is representing
+     *
+     * @param name of the class the {@code ClassNode} is representing
+     * @return the new {@code {@code ClassNode}}
      */
     public static ClassNode make(String name) {
         if (name == null || name.length() == 0) return DYNAMIC_TYPE;
-        
+
         for (int i=0; i<primitiveClassNames.length; i++) {
             if (primitiveClassNames[i].equals(name)) return types[i];
         }
-        
+
         for (int i=0; i<classes.length; i++) {
             String cname = classes[i].getName();
             if (name.equals(cname)) return types[i];
-        }        
+        }
         return makeWithoutCaching(name);
     }
-    
+
     /**
-     * Creates a ClassNode containing the wrapper of a ClassNode 
-     * of primitive type. Any ClassNode representing a primitive
+     * Creates a {@code ClassNode} containing the wrapper of a {@code ClassNode}
+     * of primitive type. Any {@code ClassNode} representing a primitive
      * type should be created using the predefined types used in
-     * class. The method will check the parameter for known 
-     * references of ClassNode representing a primitive type. If
-     * Reference is found, then a ClassNode will be contained that
+     * class. The method will check the parameter for known
+     * references of {@code ClassNode} representing a primitive type. If
+     * Reference is found, then a {@code ClassNode} will be contained that
      * represents the wrapper class. For example for boolean, the
      * wrapper class is java.lang.Boolean.
-     * 
-     * If the parameter is no primitive type, the redirected 
-     * ClassNode will be returned 
-     *   
+     *
+     * If the parameter is no primitive type, the redirected
+     * {@code ClassNode} will be returned
+     *
      * @see #make(Class)
      * @see #make(String)
-     * @param cn the ClassNode containing a possible primitive type
+     * @param cn the {@code ClassNode} containing a possible primitive type
+     * @return the wrapped {@code ClassNode}
      */
     public static ClassNode getWrapper(ClassNode cn) {
         cn = cn.redirect();
@@ -301,14 +304,14 @@ public class ClassHelper {
 
 
     /**
-     * Test to determine if a ClassNode is a primitive type.
-     * Note: this only works for ClassNodes created using a
-     * predefined ClassNode
-     * 
+     * Test to determine if a {@code ClassNode} is a primitive type.
+     * Note: this only works for {@code ClassNode}s created using a
+     * predefined {@code ClassNode}
+     *
      * @see #make(Class)
      * @see #make(String)
-     * @param cn the ClassNode containing a possible primitive type
-     * @return true if the ClassNode is a primitive type
+     * @param cn the {@code ClassNode} containing a possible primitive type
+     * @return true if the {@code ClassNode} is a primitive type
      */
     public static boolean isPrimitiveType(ClassNode cn) {
         return  cn == boolean_TYPE ||
@@ -323,16 +326,16 @@ public class ClassHelper {
     }
 
     /**
-     * Test to determine if a ClassNode is a type belongs to the list of types which
+     * Test to determine if a {@code ClassNode} is a type belongs to the list of types which
      * are allowed to initialize constants directly in bytecode instead of using &lt;cinit&gt;
      *
-     * Note: this only works for ClassNodes created using a
-     * predefined ClassNode
+     * Note: this only works for {@code ClassNode}s created using a
+     * predefined {@code ClassNode}
      *
      * @see #make(Class)
      * @see #make(String)
-     * @param cn the ClassNode to be tested
-     * @return true if the ClassNode is of int, float, long, double or String type
+     * @param cn the {@code ClassNode} to be tested
+     * @return true if the {@code ClassNode} is of int, float, long, double or String type
      */
     public static boolean isStaticConstantInitializerType(ClassNode cn) {
         return  cn == int_TYPE ||

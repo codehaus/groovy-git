@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2010 the original author or authors.
+ * Copyright 2003-2010, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,24 +21,23 @@ import org.codehaus.groovy.runtime.InvokerHelper;
 
 /**
  * Represents a closure expression such as { statement }
- * or { i -> statement } or { i, x, String y ->  statement }
- * 
+ * or { i -&gt; statement } or { i, x, String y -&gt;  statement }
+ *
  * @author <a href="mailto:james@coredevelopers.net">James Strachan</a>
  * @author Hamlet D'Arcy
- * @version $Revision$
  */
 public class ClosureExpression extends Expression {
-    
+
     private Parameter[] parameters;
     private Statement code;
     private VariableScope variableScope;
-    
+
     public ClosureExpression(Parameter[] parameters, Statement code) {
         this.parameters = parameters;
         this.code = code;
         super.setType(ClassHelper.CLOSURE_TYPE.getPlainNodeReference());
     }
-    
+
     public void visit(GroovyCodeVisitor visitor) {
         visitor.visitClosureExpression(this);
     }
@@ -46,7 +45,7 @@ public class ClosureExpression extends Expression {
     public Expression transformExpression(ExpressionTransformer transformer) {
         return this;
     }
-    
+
     public String toString() {
         return super.toString() + InvokerHelper.toString(parameters) + "{ " + code + " }";
     }
@@ -78,7 +77,7 @@ public class ClosureExpression extends Expression {
     public boolean isParameterSpecified() {
         return parameters != null && parameters.length > 0;
     }
-    
+
     public VariableScope getVariableScope() {
         return variableScope;
     }

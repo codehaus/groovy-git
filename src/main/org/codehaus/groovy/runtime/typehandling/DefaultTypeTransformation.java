@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2012 the original author or authors.
+ * Copyright 2003-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,14 +34,14 @@ import java.util.*;
  * @author Guillaume Laforge
  */
 public class DefaultTypeTransformation {
-    
+
     protected static final Object[] EMPTY_ARGUMENTS = {};
     protected static final BigInteger ONE_NEG = new BigInteger("-1");
-    
+
     //  --------------------------------------------------------
     //                  unboxing methods
-    //  --------------------------------------------------------       
-    
+    //  --------------------------------------------------------
+
     public static byte byteUnbox(Object value) {
         Number n = castToNumber(value, byte.class);
         return n.byteValue();
@@ -78,12 +78,12 @@ public class DefaultTypeTransformation {
     public static double doubleUnbox(Object value) {
         Number n = castToNumber(value, double.class);
         return n.doubleValue();
-    } 
+    }
 
     //  --------------------------------------------------------
     //                  boxing methods
-    //  --------------------------------------------------------       
-    
+    //  --------------------------------------------------------
+
     public static Object box(boolean value) {
         return value ? Boolean.TRUE : Boolean.FALSE;
     }
@@ -115,12 +115,12 @@ public class DefaultTypeTransformation {
     public static Object box(double value) {
         return Double.valueOf(value);
     }
-    
+
     public static Number castToNumber(Object object) {
         // default to Number class in exception details, else use the specified Number subtype.
         return castToNumber(object, Number.class);
     }
-    
+
     public static Number castToNumber(Object object, Class type) {
         if (object instanceof Number)
             return (Number) object;
@@ -148,7 +148,7 @@ public class DefaultTypeTransformation {
 
     /**
      * Method used for coercing an object to a boolean value,
-     * thanks to an <code>asBoolean()</code> method added on types. 
+     * thanks to an <code>asBoolean()</code> method added on types.
      *
      * @param object to coerce to a boolean value
      * @return a boolean value
@@ -158,19 +158,19 @@ public class DefaultTypeTransformation {
         if (object == null) {
             return false;
         }
-        
+
         // equality check is enough and faster than instanceof check, no need to check superclasses since Boolean is final
-        if (object.getClass() == Boolean.class) {   
+        if (object.getClass() == Boolean.class) {
             return ((Boolean)object).booleanValue();
         }
-        
+
         // if the object is not null and no Boolean, try to call an asBoolean() method on the object
         return (Boolean)InvokerHelper.invokeMethod(object, "asBoolean", InvokerHelper.EMPTY_ARGS);
     }
-    
+
     public static char castToChar(Object object) {
         if (object instanceof Character) {
-            return ((Character) object).charValue();            
+            return ((Character) object).charValue();
         } else if (object instanceof Number) {
             Number value = (Number) object;
             return (char) value.intValue();
@@ -184,7 +184,7 @@ public class DefaultTypeTransformation {
             }
         }
     }
-    
+
     public static Object castToType(Object object, Class type) {
         if (object == null) {
             return null;
@@ -284,7 +284,7 @@ public class DefaultTypeTransformation {
             }
         } else if (type.isPrimitive()) {
             if (type == boolean.class) {
-               return box(booleanUnbox(object)); 
+               return box(booleanUnbox(object));
             } else if (type == byte.class) {
                 return box(byteUnbox(object));
             } else if (type == char.class) {
@@ -437,7 +437,7 @@ public class DefaultTypeTransformation {
         }
         return array;
     }
-    
+
     public static <T> Collection<T> asCollection(T[] value) {
         return arrayAsCollection(value);
     }
@@ -518,7 +518,7 @@ public class DefaultTypeTransformation {
 
         return false;
     }
-    
+
     /**
      * Allows conversion of arrays into a mutable List
      *
@@ -537,7 +537,7 @@ public class DefaultTypeTransformation {
         }
         return list;
     }
-    
+
     public static Object[] primitiveArrayBox(Object array) {
         int size = Array.getLength(array);
         Object[] ret = (Object[]) Array.newInstance(ReflectionCache.autoboxType(array.getClass().getComponentType()), size);
@@ -546,9 +546,13 @@ public class DefaultTypeTransformation {
         }
         return ret;
     }
-    
+
     /**
      * Compares the two objects handling nulls gracefully and performing numeric type coercion if required
+     *
+     * @param left left operand
+     * @param right right operand
+     * @return result
      */
     public static int compareTo(Object left, Object right) {
         return compareToWithEqualityCheck(left, right, false);
@@ -667,6 +671,7 @@ public class DefaultTypeTransformation {
     }
 
     /**
+     * @param value the value to test
      * @return true if the given value is a valid character string (i.e. has length of 1)
      */
     private static boolean isValidCharacterString(Object value) {
@@ -855,7 +860,7 @@ public class DefaultTypeTransformation {
             return a;
         }
     }
-    
+
     public static Character getCharFromSizeOneString(Object value) {
         if (value instanceof GString) value = value.toString();
         if (value instanceof String) {

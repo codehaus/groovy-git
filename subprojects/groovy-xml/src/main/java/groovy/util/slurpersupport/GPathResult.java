@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2012 the original author or authors.
+ * Copyright 2003-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -208,7 +208,7 @@ public abstract class GPathResult extends GroovyObjectSupport implements Writabl
     protected abstract void replaceNode(Closure newValue);
 
     protected abstract void replaceBody(Object newValue);
-    
+
     protected abstract void appendNode(Object newValue);
 
     /**
@@ -364,7 +364,7 @@ public abstract class GPathResult extends GroovyObjectSupport implements Writabl
      * &lt;characterList&gt;
      *   &lt;character/&gt;
      *   &lt;character&gt;
-     *     &lt;name>Gromit&lt;/name&gt;
+     *     &lt;name&gt;Gromit&lt;/name&gt;
      *   &lt;/character&gt;
      * &lt;/characterList&gt;"""
      *
@@ -403,7 +403,7 @@ public abstract class GPathResult extends GroovyObjectSupport implements Writabl
      * Supports the range subscript operator for a GPathResult.
      * <pre>
      * def text = """
-     * &lt;characterList>
+     * &lt;characterList&gt;
      *   &lt;character&gt;Wallace&lt;/character&gt;
      *   &lt;character&gt;Gromit&lt;/character&gt;
      *   &lt;character&gt;Shaun&lt;/character&gt;
@@ -587,7 +587,7 @@ public abstract class GPathResult extends GroovyObjectSupport implements Writabl
                     } else {
                         delegate.invokeMethod("yield", new Object[]{child});
                     }
-                }                
+                }
             }
         };
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2011, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ public class JmxBuilderModelMBean extends RequiredModelMBean implements Notifica
     /**
      * Registers listeners for operation calls (i.e. method, getter, and setter calls) when
      * invoked on this bean from the MBeanServer.  Descriptor should contain a map with layout
-     * item -> [Map[methodListener:[target:"", tpe:"", callback:&amp;Closure], ... ,]]
+     * item -&gt; [Map[methodListener:[target:"", tpe:"", callback:&amp;Closure], ... ,]]
      *
      * @param descriptor MetaMap descriptor containing description of operation call listeners
      */
@@ -100,7 +100,7 @@ public class JmxBuilderModelMBean extends RequiredModelMBean implements Notifica
 
     /**
      * Sets up event listeners for this MBean as described in the descriptor.
-     * The descriptor contains a map with layout {item -> Map[event:"...", from:ObjectName, callback:&amp;Closure],...,}
+     * The descriptor contains a map with layout {item -&gt; Map[event:"...", from:ObjectName, callback:&amp;Closure],...,}
      *
      * @param server     the MBeanServer is to be registered.
      * @param descriptor a map containing info about the event

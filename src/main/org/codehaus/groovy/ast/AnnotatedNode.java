@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 the original author or authors.
+ * Copyright 2003-2007, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,9 +62,9 @@ public class AnnotatedNode extends ASTNode {
 
     /**
      * returns true if this node is added by the compiler.
-     * <b>NOTE</b>: 
+     * <b>NOTE</b>:
      * This method has nothing to do with the synthetic flag
-     * for fields, methods or classes.              
+     * for fields, methods or classes.
      * @return true if this node is added by the compiler
      */
     public boolean isSynthetic() {
@@ -73,9 +73,9 @@ public class AnnotatedNode extends ASTNode {
 
     /**
      * sets this node as a node added by the compiler.
-     * <b>NOTE</b>: 
+     * <b>NOTE</b>:
      * This method has nothing to do with the synthetic flag
-     * for fields, methods or classes.              
+     * for fields, methods or classes.
      * @param synthetic - if true this node is marked as
      *                    added by the compiler
      */
@@ -97,6 +97,8 @@ public class AnnotatedNode extends ASTNode {
     /**
      * Currently only ever returns true for default constructors
      * added by the compiler. See GROOVY-4161.
+     *
+     * @return the state
      */
     public boolean hasNoRealSourcePosition() {
         return hasNoRealSourcePositionFlag;

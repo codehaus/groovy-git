@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2010 the original author or authors.
+ * Copyright 2003-2010, 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,72 +33,75 @@ public class MessageSource
     extends GroovyObjectSupport
 {
     private final String[] bundleNames;
-    
+
     private ResourceBundle[] cachedBundles;
-    
+
     public MessageSource(final String[] names) {
         assert names != null;
         assert names.length != 0;
-        
+
         this.bundleNames = names;
     }
-    
+
     public MessageSource(final String name) {
         this(new String[] { name });
     }
-    
+
     private static String[] classNames(final Class[] types) {
         assert types != null;
         assert types.length != 0;
-        
+
         String[] names = new String[types.length];
-        
+
         for (int i=0; i<types.length; i++) {
             assert types[i] != null;
-            
+
             names[i] = types[i].getName();
         }
-        
+
         return names;
     }
-    
+
     public MessageSource(final Class[] types) {
         this(classNames(types));
     }
-    
+
     public MessageSource(final Class type) {
         this(new String[] { type.getName() });
     }
-    
+
     private ResourceBundle[] createBundles() {
         ResourceBundle[] bundles = new ResourceBundle[bundleNames.length];
-        
+
         for (int i=0; i<bundleNames.length; i++) {
             assert bundleNames[i] != null;
-            
+
             bundles[i] = ResourceBundle.getBundle(bundleNames[i]);
         }
-        
+
         return bundles;
     }
-    
+
     private ResourceBundle[] getBundles() {
         if (cachedBundles == null) {
             cachedBundles = createBundles();
         }
         return cachedBundles;
     }
-    
+
     /**
      * Get a raw message from the resource bundles using the given code.
+     *
+     * @param code the code to search for.
+     * @return message from the bundle.
      */
     public String getMessage(final String code) {
         assert code != null;
-        
+
         MissingResourceException error = null;
-        
+
         ResourceBundle[] bundles = getBundles();
-        
+
         for (int i=0; i<bundles.length; i++) {
             try {
                 return bundles[i].getString(code);
@@ -107,31 +110,35 @@ public class MessageSource
                 //
                 // FIXME: For now just save the first error, should really roll a new message with all of the details
                 //
-                
+
                 if (error != null) {
                     error = e;
                 }
             }
         }
-        
+
         assert error != null;
-        
+
         throw error;
     }
-    
+
     /**
-     * Format a message (based on {@link MessageFormat} using the message
+     * Format a message (based on {@link MessageFormat}) using the message
      * from the resource bundles using the given code as a pattern and the
      * given objects as arguments.
+     *
+     * @param code the pattern code.
+     * @param args the arguments.
+     * @return formatted string.
      */
     public String format(final String code, final Object[] args) {
         assert args != null;
-        
+
         String pattern = getMessage(code);
-        
+
         return MessageFormat.format(pattern, args);
     }
-    
+
     /**
      * @see #getMessage(String)
      */

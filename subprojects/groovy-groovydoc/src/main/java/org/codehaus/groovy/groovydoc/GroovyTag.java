@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2012 the original author or authors.
+ * Copyright 2003-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,22 @@ public interface GroovyTag {
 
     /**
      * The tag name, e.g. "deprecated", "param", "see" or "author".
+     *
+     * @return The tag name.
      */
     String name();
 
     /**
      * The optional parameter for tags like "throws" and "param".
+     *
+     * @return The optional parameter.
      */
     String param();
 
     /**
      * The text associated with the tag.
+     *
+     * @return The text associated with the tag.
      */
     String text();
 }
